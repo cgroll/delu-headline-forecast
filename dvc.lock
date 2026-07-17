@@ -175,21 +175,37 @@ stages:
       size: 4204
     - path: pipeline/03_eda.py
       hash: md5
-      md5: 10426756771c4ae6c3304897530fadd7
-      size: 4020
+      md5: 147a330a5a95c40b804f3fd89466f248
+      size: 10594
     outs:
     - path: book/notebooks/03_eda.ipynb
       hash: md5
-      md5: 0439e2ad0b2e8fa8e19d7e35397f0655
-      size: 7060
+      md5: 7e3bc2717a28d971e7184ccd09c4228b
+      size: 17618
     - path: output/images/03_data_availability.png
       hash: md5
       md5: e1b98dbfed2bb41ffb5a27a0d9fec498
       size: 44786
+    - path: output/images/03_doy_std.png
+      hash: md5
+      md5: 21ca754e0c9bdf11f8a0d4de4c372447
+      size: 387087
     - path: output/images/03_headline_variables_timeseries.png
       hash: md5
       md5: 331d42b0902e2b392551173a7933b80e
       size: 253195
+    - path: output/images/03_renewable_share_of_load.png
+      hash: md5
+      md5: 4fc6315d88cce8d372479fcdca361a3c
+      size: 249650
+    - path: output/images/03_renewables_vs_demand.png
+      hash: md5
+      md5: 6567aa43b9d435a7fcae1ddbc13d4af5
+      size: 493104
+    - path: output/images/03_rolling_volatility.png
+      hash: md5
+      md5: 728438e15afa4694323642ce7ee0bd82
+      size: 331588
   baseline_linear_regression:
     cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
       python3 --output book/notebooks/04_baseline_linear_regression.ipynb 
@@ -203,8 +219,8 @@ stages:
       size: 1966627
     - path: dhf/features.py
       hash: md5
-      md5: f9d1fab8b05fb4b9c226a77914a07837
-      size: 5522
+      md5: 2c6138a20b4a8fe29f8bffc5422797ca
+      size: 6648
     - path: dhf/reporting.py
       hash: md5
       md5: e51d141fc21d4df2483ddd3a7be3d31f
@@ -228,36 +244,36 @@ stages:
     outs:
     - path: book/notebooks/04_baseline_linear_regression.ipynb
       hash: md5
-      md5: d9aa9bfa01d0352db23d99bb08161319
-      size: 19392
+      md5: 49dd3c025efc076dc1f02ac81f2a271a
+      size: 19404
     - path: data/processed/results/baseline_linear_regression.parquet
       hash: md5
-      md5: d18caf70c1ec51da2f547e99cab4542e
+      md5: e5b1750af396109951ad650005d64beb
       size: 7715
     - path: output/images/04_lr_actual_vs_predicted_summer.png
       hash: md5
-      md5: 9e55937e12bac9d1132e0df6c5ade1aa
-      size: 993008
+      md5: 8e57ef32b07e05f337384dd1062161cd
+      size: 992349
     - path: output/images/04_lr_actual_vs_predicted_winter.png
       hash: md5
-      md5: 3ea7c93c4cc54f5064cd40ec57ad9d44
-      size: 911743
+      md5: 68207befd2d059a130233e23a495aeab
+      size: 890692
     - path: output/images/04_lr_feature_importance.png
       hash: md5
-      md5: 141f7e343b612b68b8a4799641e31de7
-      size: 129332
+      md5: 2ff64567f5a786316d40853f74f19992
+      size: 131267
     - path: output/images/04_lr_mae_by_horizon.png
       hash: md5
-      md5: ce5d5de12aeebca97967072e01b35a8e
-      size: 105580
+      md5: db76806880ef228ac12d6fcd9e4ebc87
+      size: 105901
     - path: output/images/04_lr_rolling_error.png
       hash: md5
-      md5: 6315935eb074cee0f07092b1eea4f640
-      size: 532643
+      md5: 51907ffdb2829182706e827db73c6753
+      size: 538559
     - path: output/images/04_lr_scatter_actual_vs_predicted.png
       hash: md5
-      md5: ffcff305200269f5d9a4b4cfa78babff
-      size: 1429080
+      md5: 63186fabd18b9fcee97c9bd4e5eeeed7
+      size: 1423367
   baseline_lightgbm:
     cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
       python3 --output book/notebooks/05_baseline_lightgbm.ipynb 
@@ -271,8 +287,8 @@ stages:
       size: 1966627
     - path: dhf/features.py
       hash: md5
-      md5: f9d1fab8b05fb4b9c226a77914a07837
-      size: 5522
+      md5: 2c6138a20b4a8fe29f8bffc5422797ca
+      size: 6648
     - path: dhf/reporting.py
       hash: md5
       md5: e51d141fc21d4df2483ddd3a7be3d31f
@@ -296,65 +312,65 @@ stages:
     outs:
     - path: book/notebooks/05_baseline_lightgbm.ipynb
       hash: md5
-      md5: 2a5ea43e82034824d2575e95bd6bc6d5
-      size: 19067
+      md5: 0936ecbc0d192c2f46d576af86c028cc
+      size: 19079
     - path: data/processed/results/baseline_lightgbm.parquet
       hash: md5
-      md5: aad406cce02121db0c25ec3ab9018ad2
+      md5: 91dcdd61e0dae9240ba5308906800ad2
       size: 7404
     - path: output/images/05_lgbm_actual_vs_predicted_summer.png
       hash: md5
-      md5: faeddd39b49e72d04acad586557e491d
-      size: 973028
+      md5: 372b02a21ea6016c41526a728bc5e271
+      size: 971985
     - path: output/images/05_lgbm_actual_vs_predicted_winter.png
       hash: md5
-      md5: 93a70edf91032201c10f19292dfdf5c4
-      size: 894741
+      md5: e681047b8debf5d3e0fa28ebfb779466
+      size: 891028
     - path: output/images/05_lgbm_feature_importance.png
       hash: md5
-      md5: a7817c3e66a67eb0f56ecbc3a905965f
-      size: 130001
+      md5: ac113e7edf085869fae9b13708a01964
+      size: 131380
     - path: output/images/05_lgbm_mae_by_horizon.png
       hash: md5
-      md5: 1472b1a2881821ade0a67562ae9c20de
-      size: 106904
+      md5: 3ef9a6bb943d19e44e25d9264b178d63
+      size: 105420
     - path: output/images/05_lgbm_rolling_error.png
       hash: md5
-      md5: cb0457e5d855bfb85d757e813d788765
-      size: 540512
+      md5: 4bd14bdb336b3a7b80b1645c7c34c9ff
+      size: 537338
     - path: output/images/05_lgbm_scatter_actual_vs_predicted.png
       hash: md5
-      md5: dab96c1a7ad74ff59ac4d12b63c4cfdc
-      size: 1457958
+      md5: 240e0c8678e75213bb22834c58de7731
+      size: 1443399
   scenario_overview_tables:
     cmd: uv run python pipeline/06_scenario_overview_tables.py
     deps:
     - path: data/processed/results/baseline_lightgbm.parquet
       hash: md5
-      md5: aad406cce02121db0c25ec3ab9018ad2
+      md5: 91dcdd61e0dae9240ba5308906800ad2
       size: 7404
     - path: data/processed/results/baseline_linear_regression.parquet
       hash: md5
-      md5: d18caf70c1ec51da2f547e99cab4542e
+      md5: e5b1750af396109951ad650005d64beb
       size: 7715
     - path: 
         data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
       hash: md5
-      md5: 1453f7ade935d85a7305f3ed81a284c8
+      md5: e3a9e3d5e744a5bbc86d6e163991be56
       size: 9291
     - path: data/processed/results/perfect_foresight_weather_lightgbm.parquet
       hash: md5
-      md5: 22d592fcbe4e01a6ef5b5adb7580bb35
+      md5: cf5be213360f221ff3413c0f6684d0d7
       size: 9050
     - path: 
         data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
       hash: md5
-      md5: bcb19542439cfc848041f764b7e6486f
+      md5: 3ae49fba937ec1fe84b5fbcf6b02cec3
       size: 9338
     - path: 
         data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
       hash: md5
-      md5: bf0e5a65f2dd52a9018348a60a696e86
+      md5: 8787586f232cc983c076c51fc13a79c7
       size: 9267
     - path: dhf/scenarios.py
       hash: md5
@@ -371,7 +387,7 @@ stages:
     outs:
     - path: book/notebooks/06_scenario_overview_tables.ipynb
       hash: md5
-      md5: 4cb02d589b3c08a35a32070121a56f89
+      md5: 2e81f25fe9a35539642f2a84c16c1125
       size: 13049
   scenario_overview_lead_times:
     cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
@@ -382,30 +398,30 @@ stages:
     deps:
     - path: data/processed/results/baseline_lightgbm.parquet
       hash: md5
-      md5: aad406cce02121db0c25ec3ab9018ad2
+      md5: 91dcdd61e0dae9240ba5308906800ad2
       size: 7404
     - path: data/processed/results/baseline_linear_regression.parquet
       hash: md5
-      md5: d18caf70c1ec51da2f547e99cab4542e
+      md5: e5b1750af396109951ad650005d64beb
       size: 7715
     - path: 
         data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
       hash: md5
-      md5: 1453f7ade935d85a7305f3ed81a284c8
+      md5: e3a9e3d5e744a5bbc86d6e163991be56
       size: 9291
     - path: data/processed/results/perfect_foresight_weather_lightgbm.parquet
       hash: md5
-      md5: 22d592fcbe4e01a6ef5b5adb7580bb35
+      md5: cf5be213360f221ff3413c0f6684d0d7
       size: 9050
     - path: 
         data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
       hash: md5
-      md5: bcb19542439cfc848041f764b7e6486f
+      md5: 3ae49fba937ec1fe84b5fbcf6b02cec3
       size: 9338
     - path: 
         data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
       hash: md5
-      md5: bf0e5a65f2dd52a9018348a60a696e86
+      md5: 8787586f232cc983c076c51fc13a79c7
       size: 9267
     - path: dhf/scenarios.py
       hash: md5
@@ -422,16 +438,16 @@ stages:
     outs:
     - path: book/notebooks/07_scenario_overview_lead_times.ipynb
       hash: md5
-      md5: 90c0490637314f86922cb8348ec3304d
+      md5: 7d5b45191baf7f9e82d174234042e7e7
       size: 6404
     - path: output/images/07_lead_time_mae.png
       hash: md5
-      md5: a9939f5e3e25d92e451ab4782d4ef5b4
-      size: 194790
+      md5: 6f259c5c1ad29c806f19943afe391616
+      size: 194199
     - path: output/images/07_lead_time_rmse.png
       hash: md5
-      md5: 88c81349c143c35ee0e058fed76f6b9b
-      size: 197710
+      md5: 2112b008182820ac0e50d204ebdf3fc3
+      size: 198737
   download_pecd_masks:
     cmd: uv run python pipeline/08_download_pecd_masks.py
     deps:
@@ -638,8 +654,8 @@ stages:
       size: 1966627
     - path: dhf/features.py
       hash: md5
-      md5: f9d1fab8b05fb4b9c226a77914a07837
-      size: 5522
+      md5: 2c6138a20b4a8fe29f8bffc5422797ca
+      size: 6648
     - path: dhf/pecd.py
       hash: md5
       md5: ca15114cf09e6085ee45d908e4997e21
@@ -667,36 +683,36 @@ stages:
     outs:
     - path: book/notebooks/13_perfect_foresight_weather_lightgbm.ipynb
       hash: md5
-      md5: 7561732d24c6cc8f50f3fe3c0de29fda
-      size: 23702
+      md5: ee3f4b6a347295f015f65b5e25bdf026
+      size: 23714
     - path: data/processed/results/perfect_foresight_weather_lightgbm.parquet
       hash: md5
-      md5: 22d592fcbe4e01a6ef5b5adb7580bb35
+      md5: cf5be213360f221ff3413c0f6684d0d7
       size: 9050
     - path: output/images/13_pfw_actual_vs_predicted_summer.png
       hash: md5
-      md5: 0b027cf04831694fafb20d815f1e786b
-      size: 1022926
+      md5: 955d94dbf4c096bbfc30e5cadd0c38cd
+      size: 1023256
     - path: output/images/13_pfw_actual_vs_predicted_winter.png
       hash: md5
-      md5: e030e6f7447f23fee92d146e5564fe3f
-      size: 920479
+      md5: 9d353114434e63440e200c47f6d8caf5
+      size: 919196
     - path: output/images/13_pfw_feature_importance.png
       hash: md5
-      md5: 8d0ae8cb8d86956a67aea22bba910556
-      size: 168872
+      md5: d4d0cf2319a1f3f06b2015ee057f5805
+      size: 170084
     - path: output/images/13_pfw_mae_by_horizon.png
       hash: md5
-      md5: c67f42a1091e96be9dd88b2dc1e57ce3
-      size: 106225
+      md5: ed4e6d9ba5d9b89c7ab34c4eed2a08ee
+      size: 105369
     - path: output/images/13_pfw_rolling_error.png
       hash: md5
-      md5: 3815807a33364d060c09aa5ec88020dd
-      size: 519257
+      md5: 97a7db1192f47ca74406dede093bbe18
+      size: 505412
     - path: output/images/13_pfw_scatter_actual_vs_predicted.png
       hash: md5
-      md5: 879dbaf9ff721cc68286d1200ece46ee
-      size: 1176064
+      md5: 9b2ed11fff40a1498f62ed198c19fd8a
+      size: 1164586
   download_pecd_temperature:
     cmd: uv run python pipeline/14_download_pecd_temperature.py
     deps:
@@ -767,8 +783,8 @@ stages:
       size: 1966627
     - path: dhf/features.py
       hash: md5
-      md5: f9d1fab8b05fb4b9c226a77914a07837
-      size: 5522
+      md5: 2c6138a20b4a8fe29f8bffc5422797ca
+      size: 6648
     - path: dhf/pecd.py
       hash: md5
       md5: ca15114cf09e6085ee45d908e4997e21
@@ -797,37 +813,37 @@ stages:
     - path: 
         book/notebooks/16_perfect_foresight_weather_lightgbm_quarterly_refit.ipynb
       hash: md5
-      md5: 9fb5cace560e1591b9fa51a33b7ce69d
-      size: 23965
+      md5: ba74102419c401e96d6ed4a06322a777
+      size: 23977
     - path: 
         data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
       hash: md5
-      md5: bcb19542439cfc848041f764b7e6486f
+      md5: 3ae49fba937ec1fe84b5fbcf6b02cec3
       size: 9338
     - path: output/images/16_qr_actual_vs_predicted_summer.png
       hash: md5
-      md5: f354b2cc5f43d6ca05cb5029d1d46b13
-      size: 1055251
+      md5: 07944d835fe108b8f628ceb1b661ef64
+      size: 1055871
     - path: output/images/16_qr_actual_vs_predicted_winter.png
       hash: md5
-      md5: 98f6394dfa87b493ccd590c11da204db
-      size: 947013
+      md5: 0cac8eab9cdf0a8b90f6bf5905ee223c
+      size: 947313
     - path: output/images/16_qr_feature_importance.png
       hash: md5
-      md5: 5a64b9734f1c4b7459d75946ed671a56
-      size: 171187
+      md5: 224e388b1938f2d8b9cbda461973d67b
+      size: 172773
     - path: output/images/16_qr_mae_by_horizon.png
       hash: md5
-      md5: 6cff0e5d98dd8f4cf8a932604c37f70c
-      size: 105199
+      md5: 62124ee3d78b2b602c555ec24e14384b
+      size: 104733
     - path: output/images/16_qr_rolling_error.png
       hash: md5
-      md5: e8ceb0e94c230c46ad21bfc16c9cedfe
-      size: 535918
+      md5: d1fb6a660dbc220bcf458d4ae5fe25d4
+      size: 546201
     - path: output/images/16_qr_scatter_actual_vs_predicted.png
       hash: md5
-      md5: 7d5457b7bf9ef7029f9f29f09cc805d9
-      size: 1213485
+      md5: bff11addd85829ad802c830d4833056e
+      size: 1198723
   perfect_foresight_weather_xgboost_quarterly_refit:
     cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
       python3 --output 
@@ -858,8 +874,8 @@ stages:
       size: 1966627
     - path: dhf/features.py
       hash: md5
-      md5: f9d1fab8b05fb4b9c226a77914a07837
-      size: 5522
+      md5: 2c6138a20b4a8fe29f8bffc5422797ca
+      size: 6648
     - path: dhf/pecd.py
       hash: md5
       md5: ca15114cf09e6085ee45d908e4997e21
@@ -888,37 +904,37 @@ stages:
     - path: 
         book/notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb
       hash: md5
-      md5: 42ba09e687e387b856c9f9453e95b4e6
-      size: 22854
+      md5: c1fa2ee4deda3d2895807fe5c3656160
+      size: 22866
     - path: 
         data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
       hash: md5
-      md5: bf0e5a65f2dd52a9018348a60a696e86
+      md5: 8787586f232cc983c076c51fc13a79c7
       size: 9267
     - path: output/images/17_xgb_actual_vs_predicted_summer.png
       hash: md5
-      md5: c0913028ec4300221a2d032d52e54403
-      size: 1042015
+      md5: 4afdc4baa4633ef25940690490d1fdb9
+      size: 1041669
     - path: output/images/17_xgb_actual_vs_predicted_winter.png
       hash: md5
-      md5: 24d2f688f6574234980691f24452bdeb
-      size: 944940
+      md5: 89f7311c3283d571c92fdf4f4c122c65
+      size: 938947
     - path: output/images/17_xgb_feature_importance.png
       hash: md5
-      md5: 0a63e8c6b5b19e0b9071b3f66fcbf2d8
-      size: 171648
+      md5: dc183d8bd0ea0c427923d509bce9fc95
+      size: 173347
     - path: output/images/17_xgb_mae_by_horizon.png
       hash: md5
-      md5: e687e43c6d018feab77cafecd398e969
-      size: 105485
+      md5: 61124476344a417c895c41ea1ca3e847
+      size: 107513
     - path: output/images/17_xgb_rolling_error.png
       hash: md5
-      md5: f1a4cffd097c35cf169014a5ec837cd2
-      size: 534409
+      md5: a1780dfac2d4bf3b210a5f25a2dba8e5
+      size: 544968
     - path: output/images/17_xgb_scatter_actual_vs_predicted.png
       hash: md5
-      md5: 8938a07b058373b9f5996644835f58ad
-      size: 1280676
+      md5: ae8fa4edf97cfed993b987fcde80cfd5
+      size: 1265160
   perfect_foresight_weather_catboost_quarterly_refit:
     cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
       python3 --output 
@@ -949,8 +965,8 @@ stages:
       size: 1966627
     - path: dhf/features.py
       hash: md5
-      md5: f9d1fab8b05fb4b9c226a77914a07837
-      size: 5522
+      md5: 2c6138a20b4a8fe29f8bffc5422797ca
+      size: 6648
     - path: dhf/pecd.py
       hash: md5
       md5: ca15114cf09e6085ee45d908e4997e21
@@ -979,34 +995,34 @@ stages:
     - path: 
         book/notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb
       hash: md5
-      md5: b9f2ceedb6d69c921e75b3fda8939150
-      size: 22995
+      md5: fdc01058c335ecf3040ca59165050898
+      size: 23007
     - path: 
         data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
       hash: md5
-      md5: 1453f7ade935d85a7305f3ed81a284c8
+      md5: e3a9e3d5e744a5bbc86d6e163991be56
       size: 9291
     - path: output/images/18_cb_actual_vs_predicted_summer.png
       hash: md5
-      md5: e32a1f3c4a687a06f030cc2c1169e4f2
-      size: 1029799
+      md5: bbdec9cb0e68f2c8e60afcfb946bb129
+      size: 1031382
     - path: output/images/18_cb_actual_vs_predicted_winter.png
       hash: md5
-      md5: a25b7db1267ca402efd68a5df56899d6
-      size: 929217
+      md5: 693270212d06ca2768930c6003ebbffe
+      size: 929922
     - path: output/images/18_cb_feature_importance.png
       hash: md5
-      md5: 5290959c89add5e9b9908ad5b64f2f83
-      size: 171977
+      md5: a80847ac3ba7db0c5b716e9ab6e3081e
+      size: 173495
     - path: output/images/18_cb_mae_by_horizon.png
       hash: md5
-      md5: 32aa71a63b3a985a4f087ec8a5b48983
-      size: 106314
+      md5: 7c24ff646212e03792d92abcd40ed99c
+      size: 104809
     - path: output/images/18_cb_rolling_error.png
       hash: md5
-      md5: 96aad3b74fd8333b608a797328a6e3f3
-      size: 514579
+      md5: 55b047b1c1545830667503b3c3bd96f9
+      size: 519166
     - path: output/images/18_cb_scatter_actual_vs_predicted.png
       hash: md5
-      md5: cf70e428ef5da0a3b3c36bd7225406da
-      size: 1222849
+      md5: 572e49cb88c4e2709e217c977f0a0a67
+      size: 1209119

@@ -759,6 +759,7 @@ dependencies = [
     { name = "cdsapi" },
     { name = "dvc" },
     { name = "geopandas" },
+    { name = "holidays" },
     { name = "ipykernel" },
     { name = "jupytext" },
     { name = "lightgbm" },
@@ -783,6 +784,7 @@ requires-dist = [
     { name = "cdsapi", specifier = ">=0.7.6" },
     { name = "dvc", specifier = ">=3.55.0" },
     { name = "geopandas", specifier = ">=1.0.0" },
+    { name = "holidays", specifier = ">=0.60" },
     { name = "ipykernel", specifier = ">=6.29.0" },
     { name = "jupytext", specifier = ">=1.19.0" },
     { name = "lightgbm", specifier = ">=4.5.0" },
@@ -1324,6 +1326,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/66/9c/cf74e391f76ff2afd7aee9bdd0f1b191c0522ba8190439bfa3b2672f222a/gto-1.10.1.tar.gz", hash = "sha256:e2a008650e7be42b7e3dd65e2eef360d466553e3b41d8f37dae38328d84fd224", size = 60033, upload-time = "2026-07-09T22:08:26.369Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/af/23fba84f3e03fcf58bd73e1d28ef9db7b46c5b48df95fae4b5f658db7993/gto-1.10.1-py3-none-any.whl", hash = "sha256:f357f7dee2cf91552408545e17f53a4ea54d0d16e676e35b92edf1291414d06d", size = 45713, upload-time = "2026-07-09T22:08:24.848Z" },
+]
+
+[[package]]
+name = "holidays"
+version = "0.100"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/19/65/4bec113c00c42fb8d6d71a816774a97d009c8f1341a70ecb6a9ba96176bb/holidays-0.100.tar.gz", hash = "sha256:76e963cd17758ba0e0519daff725f676eaebeda71e500cd235f647307be31e31", size = 949733, upload-time = "2026-07-06T21:15:34.947Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/78/86/4eab0e2339cf09cfd00233073f5fa37810ceacbff5db5133e26aaa610255/holidays-0.100-py3-none-any.whl", hash = "sha256:cf67e8983c3af182b62081be27c965c6fdf41377026aa62ac82d1bbc8c7ebd8f", size = 1529449, upload-time = "2026-07-06T21:15:32.949Z" },
 ]
 
 [[package]]

@@ -2,8 +2,8 @@
 
 Shared across pipeline scenarios — see docs/modeling_plan.md for the
 baseline feature set implemented here: daily/annual seasonality, short lags
-(1h, 2h, 24h, 48h), and — load only — weekday dummies plus a weekday-matched
-lag.
+(1h, 2h, 24h, 48h), and — load only — weekday dummies, a weekday-matched
+lag, and a German public holiday flag.
 
 Two different notions of "causal" are at play, and it matters which
 timestamp each feature is computed from:
@@ -20,11 +20,21 @@ timestamp each feature is computed from:
   horizon is an exact multiple of 24h), but day-of-year and weekday are not.
 """
 
+import holidays
 import numpy as np
 import pandas as pd
 
 LAG_HOURS = [1, 2, 24, 48]
 WEEKDAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+# National (federal) German public holidays only — no `subdiv`, so
+# state-specific ones (Epiphany, Reformation Day, Corpus Christi, ...) are
+# deliberately excluded, since the target is a national DE-LU aggregate, not
+# any one Bundesland. Luxembourg's own holidays aren't included either — the
+# same simplification already made for its small share of DE-LU generation/
+# load elsewhere (see docs/data_sources.md). Expands lazily to any year
+# queried, so it covers the full panel history without pre-specifying years.
+DE_HOLIDAYS = holidays.Germany()
 
 
 def weekday_matched_lag_hours(horizon_hours: int) -> int:
@@ -78,6 +88,16 @@ def add_weekday_dummies(df: pd.DataFrame, target_index: pd.DatetimeIndex) -> pd.
     return pd.concat([df, dummies], axis=1)
 
 
+def add_holiday_feature(df: pd.DataFrame, target_index: pd.DatetimeIndex) -> pd.DataFrame:
+    """Add an `is_holiday` flag for whether `target_index`'s calendar date is a German
+    national public holiday (see `DE_HOLIDAYS`) — known with certainty arbitrarily far
+    in advance, so (like the other calendar features) computed from the target time.
+    """
+    df = df.copy()
+    df["is_holiday"] = [date in DE_HOLIDAYS for date in target_index.date]
+    return df
+
+
 def build_supervised_frame(
     panel: pd.DataFrame,
     target_col: str,
@@ -110,6 +130,7 @@ def build_supervised_frame(
     df = add_lag_features(df, target_col, horizon_hours, is_load=is_load)
     if is_load:
         df = add_weekday_dummies(df, target_index)
+        df = add_holiday_feature(df, target_index)
     if extra_target_time_features is not None:
         extra = extra_target_time_features.reindex(target_index)
         extra.index = df.index

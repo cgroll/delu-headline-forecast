@@ -49,6 +49,14 @@ stages:
           cache: false
       - output/images/03_headline_variables_timeseries.png:
           cache: false
+      - output/images/03_rolling_volatility.png:
+          cache: false
+      - output/images/03_doy_std.png:
+          cache: false
+      - output/images/03_renewables_vs_demand.png:
+          cache: false
+      - output/images/03_renewable_share_of_load.png:
+          cache: false
 
   baseline_linear_regression:
     cmd: >-
