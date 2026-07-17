@@ -171,8 +171,8 @@ stages:
       size: 1322
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/03_eda.py
       hash: md5
       md5: 10426756771c4ae6c3304897530fadd7
@@ -180,7 +180,7 @@ stages:
     outs:
     - path: book/notebooks/03_eda.ipynb
       hash: md5
-      md5: f46a5fc52109da456cc4bd028de1b059
+      md5: 0439e2ad0b2e8fa8e19d7e35397f0655
       size: 7060
     - path: output/images/03_data_availability.png
       hash: md5
@@ -219,8 +219,8 @@ stages:
       size: 1322
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/04_baseline_linear_regression.py
       hash: md5
       md5: 07a2199650ca1517487c7e7e07bd08ec
@@ -228,7 +228,7 @@ stages:
     outs:
     - path: book/notebooks/04_baseline_linear_regression.ipynb
       hash: md5
-      md5: b914a74ced2224bfd3f57ed746a7efca
+      md5: d9aa9bfa01d0352db23d99bb08161319
       size: 19392
     - path: data/processed/results/baseline_linear_regression.parquet
       hash: md5
@@ -287,8 +287,8 @@ stages:
       size: 1322
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/05_baseline_lightgbm.py
       hash: md5
       md5: 5a58d37132f2d26c30167019a8369631
@@ -296,7 +296,7 @@ stages:
     outs:
     - path: book/notebooks/05_baseline_lightgbm.ipynb
       hash: md5
-      md5: 9d281629ccfab3a7964bf00939584b71
+      md5: 2a5ea43e82034824d2575e95bd6bc6d5
       size: 19067
     - path: data/processed/results/baseline_lightgbm.parquet
       hash: md5
@@ -337,6 +337,11 @@ stages:
       hash: md5
       md5: d18caf70c1ec51da2f547e99cab4542e
       size: 7715
+    - path: 
+        data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
+      hash: md5
+      md5: 1453f7ade935d85a7305f3ed81a284c8
+      size: 9291
     - path: data/processed/results/perfect_foresight_weather_lightgbm.parquet
       hash: md5
       md5: 22d592fcbe4e01a6ef5b5adb7580bb35
@@ -344,16 +349,21 @@ stages:
     - path: 
         data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
       hash: md5
-      md5: 1e3f3bf8ab67423d93f9a801e27ca70e
+      md5: bcb19542439cfc848041f764b7e6486f
       size: 9338
+    - path: 
+        data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
+      hash: md5
+      md5: bf0e5a65f2dd52a9018348a60a696e86
+      size: 9267
     - path: dhf/scenarios.py
       hash: md5
       md5: 45cff25508c05d86e6d584b41393fff3
       size: 1986
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/06_scenario_overview_tables.py
       hash: md5
       md5: 72e4e91bb1c76e538e8da5be6e18fd60
@@ -361,8 +371,8 @@ stages:
     outs:
     - path: book/notebooks/06_scenario_overview_tables.ipynb
       hash: md5
-      md5: faf300549c189652495e4868b93bde57
-      size: 8955
+      md5: 4cb02d589b3c08a35a32070121a56f89
+      size: 13049
   scenario_overview_lead_times:
     cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
       python3 --output book/notebooks/07_scenario_overview_lead_times.ipynb 
@@ -378,6 +388,11 @@ stages:
       hash: md5
       md5: d18caf70c1ec51da2f547e99cab4542e
       size: 7715
+    - path: 
+        data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
+      hash: md5
+      md5: 1453f7ade935d85a7305f3ed81a284c8
+      size: 9291
     - path: data/processed/results/perfect_foresight_weather_lightgbm.parquet
       hash: md5
       md5: 22d592fcbe4e01a6ef5b5adb7580bb35
@@ -385,16 +400,21 @@ stages:
     - path: 
         data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
       hash: md5
-      md5: 1e3f3bf8ab67423d93f9a801e27ca70e
+      md5: bcb19542439cfc848041f764b7e6486f
       size: 9338
+    - path: 
+        data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
+      hash: md5
+      md5: bf0e5a65f2dd52a9018348a60a696e86
+      size: 9267
     - path: dhf/scenarios.py
       hash: md5
       md5: 45cff25508c05d86e6d584b41393fff3
       size: 1986
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/07_scenario_overview_lead_times.py
       hash: md5
       md5: 03aba512c70e80a04a48a3e4aa2c1571
@@ -402,16 +422,16 @@ stages:
     outs:
     - path: book/notebooks/07_scenario_overview_lead_times.ipynb
       hash: md5
-      md5: 443ad79fd80549aa64c0faa021bc69c2
-      size: 6297
+      md5: 90c0490637314f86922cb8348ec3304d
+      size: 6404
     - path: output/images/07_lead_time_mae.png
       hash: md5
-      md5: c5e147a3fb31880074d021a934581ef6
-      size: 154864
+      md5: a9939f5e3e25d92e451ab4782d4ef5b4
+      size: 194790
     - path: output/images/07_lead_time_rmse.png
       hash: md5
-      md5: d877f608851df67faf99c157d82beaae
-      size: 156697
+      md5: 88c81349c143c35ee0e058fed76f6b9b
+      size: 197710
   download_pecd_masks:
     cmd: uv run python pipeline/08_download_pecd_masks.py
     deps:
@@ -569,8 +589,8 @@ stages:
       size: 6134
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/12_pecd_mastr_comparison_eda.py
       hash: md5
       md5: cc292e42af855178f0daa390f6e80e34
@@ -578,7 +598,7 @@ stages:
     outs:
     - path: book/notebooks/12_pecd_mastr_comparison_eda.ipynb
       hash: md5
-      md5: 0aa635a7e39c3eb68d8ca230a3565c91
+      md5: 406aef3d8ebb002cb7edb52572bb3b56
       size: 12385
     - path: output/images/12_pecd_mastr_implied_vs_actual_scatter.png
       hash: md5
@@ -638,8 +658,8 @@ stages:
       size: 1322
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/13_perfect_foresight_weather_lightgbm.py
       hash: md5
       md5: c29efcfeb3c05a7674362dce23bdd91b
@@ -647,7 +667,7 @@ stages:
     outs:
     - path: book/notebooks/13_perfect_foresight_weather_lightgbm.ipynb
       hash: md5
-      md5: 2d9e91b6abfd1c57446007bbdde0df19
+      md5: 7561732d24c6cc8f50f3fe3c0de29fda
       size: 23702
     - path: data/processed/results/perfect_foresight_weather_lightgbm.parquet
       hash: md5
@@ -767,8 +787,8 @@ stages:
       size: 1322
     - path: dhf/viz.py
       hash: md5
-      md5: bd06327c41261aa4e336785330dd8b7a
-      size: 3961
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
     - path: pipeline/16_perfect_foresight_weather_lightgbm_quarterly_refit.py
       hash: md5
       md5: 45ba1ef66f0a6c00c9b8288984f5fd7d
@@ -777,12 +797,12 @@ stages:
     - path: 
         book/notebooks/16_perfect_foresight_weather_lightgbm_quarterly_refit.ipynb
       hash: md5
-      md5: 55b8a824c36a73891d8c4e681f0ff946
+      md5: 9fb5cace560e1591b9fa51a33b7ce69d
       size: 23965
     - path: 
         data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
       hash: md5
-      md5: 1e3f3bf8ab67423d93f9a801e27ca70e
+      md5: bcb19542439cfc848041f764b7e6486f
       size: 9338
     - path: output/images/16_qr_actual_vs_predicted_summer.png
       hash: md5
@@ -808,3 +828,185 @@ stages:
       hash: md5
       md5: 7d5457b7bf9ef7029f9f29f09cc805d9
       size: 1213485
+  perfect_foresight_weather_xgboost_quarterly_refit:
+    cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
+      python3 --output 
+      book/notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb 
+      pipeline/17_perfect_foresight_weather_xgboost_quarterly_refit.py && uv run
+      python pipeline/_strip_jupytext_metadata.py 
+      book/notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb
+    deps:
+    - path: data/processed/pecd_solar_capacity_factors.parquet
+      hash: md5
+      md5: fc99cff58e67559e171fa3d0d0f736e5
+      size: 51558552
+    - path: data/processed/pecd_temperature_de.parquet
+      hash: md5
+      md5: c53a0275914a16ef01be5e3ea462c620
+      size: 1796064
+    - path: data/processed/pecd_wind_offshore_capacity_factors.parquet
+      hash: md5
+      md5: fc0302a6df4558f45f41a11788b71060
+      size: 2929080
+    - path: data/processed/pecd_wind_onshore_capacity_factors.parquet
+      hash: md5
+      md5: 0284b97259860845add1711ae124e113
+      size: 2296648
+    - path: data/processed/target_panel.parquet
+      hash: md5
+      md5: c38b5ea68500b0ee2d0ecae200fbcc0f
+      size: 1966627
+    - path: dhf/features.py
+      hash: md5
+      md5: f9d1fab8b05fb4b9c226a77914a07837
+      size: 5522
+    - path: dhf/pecd.py
+      hash: md5
+      md5: ca15114cf09e6085ee45d908e4997e21
+      size: 6134
+    - path: dhf/reporting.py
+      hash: md5
+      md5: e51d141fc21d4df2483ddd3a7be3d31f
+      size: 14661
+    - path: dhf/scenarios.py
+      hash: md5
+      md5: 45cff25508c05d86e6d584b41393fff3
+      size: 1986
+    - path: dhf/splits.py
+      hash: md5
+      md5: 5a7705e7f4ffe98722305294c60fca9c
+      size: 1322
+    - path: dhf/viz.py
+      hash: md5
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
+    - path: pipeline/17_perfect_foresight_weather_xgboost_quarterly_refit.py
+      hash: md5
+      md5: 4466464da884905153f847cd6e7bf354
+      size: 9016
+    outs:
+    - path: 
+        book/notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb
+      hash: md5
+      md5: 42ba09e687e387b856c9f9453e95b4e6
+      size: 22854
+    - path: 
+        data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
+      hash: md5
+      md5: bf0e5a65f2dd52a9018348a60a696e86
+      size: 9267
+    - path: output/images/17_xgb_actual_vs_predicted_summer.png
+      hash: md5
+      md5: c0913028ec4300221a2d032d52e54403
+      size: 1042015
+    - path: output/images/17_xgb_actual_vs_predicted_winter.png
+      hash: md5
+      md5: 24d2f688f6574234980691f24452bdeb
+      size: 944940
+    - path: output/images/17_xgb_feature_importance.png
+      hash: md5
+      md5: 0a63e8c6b5b19e0b9071b3f66fcbf2d8
+      size: 171648
+    - path: output/images/17_xgb_mae_by_horizon.png
+      hash: md5
+      md5: e687e43c6d018feab77cafecd398e969
+      size: 105485
+    - path: output/images/17_xgb_rolling_error.png
+      hash: md5
+      md5: f1a4cffd097c35cf169014a5ec837cd2
+      size: 534409
+    - path: output/images/17_xgb_scatter_actual_vs_predicted.png
+      hash: md5
+      md5: 8938a07b058373b9f5996644835f58ad
+      size: 1280676
+  perfect_foresight_weather_catboost_quarterly_refit:
+    cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
+      python3 --output 
+      book/notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb
+      pipeline/18_perfect_foresight_weather_catboost_quarterly_refit.py && uv 
+      run python pipeline/_strip_jupytext_metadata.py 
+      book/notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb
+    deps:
+    - path: data/processed/pecd_solar_capacity_factors.parquet
+      hash: md5
+      md5: fc99cff58e67559e171fa3d0d0f736e5
+      size: 51558552
+    - path: data/processed/pecd_temperature_de.parquet
+      hash: md5
+      md5: c53a0275914a16ef01be5e3ea462c620
+      size: 1796064
+    - path: data/processed/pecd_wind_offshore_capacity_factors.parquet
+      hash: md5
+      md5: fc0302a6df4558f45f41a11788b71060
+      size: 2929080
+    - path: data/processed/pecd_wind_onshore_capacity_factors.parquet
+      hash: md5
+      md5: 0284b97259860845add1711ae124e113
+      size: 2296648
+    - path: data/processed/target_panel.parquet
+      hash: md5
+      md5: c38b5ea68500b0ee2d0ecae200fbcc0f
+      size: 1966627
+    - path: dhf/features.py
+      hash: md5
+      md5: f9d1fab8b05fb4b9c226a77914a07837
+      size: 5522
+    - path: dhf/pecd.py
+      hash: md5
+      md5: ca15114cf09e6085ee45d908e4997e21
+      size: 6134
+    - path: dhf/reporting.py
+      hash: md5
+      md5: e51d141fc21d4df2483ddd3a7be3d31f
+      size: 14661
+    - path: dhf/scenarios.py
+      hash: md5
+      md5: 45cff25508c05d86e6d584b41393fff3
+      size: 1986
+    - path: dhf/splits.py
+      hash: md5
+      md5: 5a7705e7f4ffe98722305294c60fca9c
+      size: 1322
+    - path: dhf/viz.py
+      hash: md5
+      md5: fe11763510eac646a15c8a09488e9610
+      size: 4204
+    - path: pipeline/18_perfect_foresight_weather_catboost_quarterly_refit.py
+      hash: md5
+      md5: dbaaf66a130c34522b7f8ccf1fbbb5ab
+      size: 9144
+    outs:
+    - path: 
+        book/notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb
+      hash: md5
+      md5: b9f2ceedb6d69c921e75b3fda8939150
+      size: 22995
+    - path: 
+        data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
+      hash: md5
+      md5: 1453f7ade935d85a7305f3ed81a284c8
+      size: 9291
+    - path: output/images/18_cb_actual_vs_predicted_summer.png
+      hash: md5
+      md5: e32a1f3c4a687a06f030cc2c1169e4f2
+      size: 1029799
+    - path: output/images/18_cb_actual_vs_predicted_winter.png
+      hash: md5
+      md5: a25b7db1267ca402efd68a5df56899d6
+      size: 929217
+    - path: output/images/18_cb_feature_importance.png
+      hash: md5
+      md5: 5290959c89add5e9b9908ad5b64f2f83
+      size: 171977
+    - path: output/images/18_cb_mae_by_horizon.png
+      hash: md5
+      md5: 32aa71a63b3a985a4f087ec8a5b48983
+      size: 106314
+    - path: output/images/18_cb_rolling_error.png
+      hash: md5
+      md5: 96aad3b74fd8333b608a797328a6e3f3
+      size: 514579
+    - path: output/images/18_cb_scatter_actual_vs_predicted.png
+      hash: md5
+      md5: cf70e428ef5da0a3b3c36bd7225406da
+      size: 1222849

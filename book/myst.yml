@@ -25,6 +25,8 @@ project:
       children:
         - file: notebooks/13_perfect_foresight_weather_lightgbm.ipynb
         - file: notebooks/16_perfect_foresight_weather_lightgbm_quarterly_refit.ipynb
+        - file: notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb
+        - file: notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb
     - title: Scenario Overview
       children:
         - file: notebooks/06_scenario_overview_tables.ipynb

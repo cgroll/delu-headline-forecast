@@ -23,6 +23,9 @@ data/processed/*
 # Secrets
 .env
 
+# CatBoost training-run scratch dir (auto-created by CatBoostRegressor.fit())
+catboost_info/
+
 # OS
 **/.DS_Store
 Thumbs.db

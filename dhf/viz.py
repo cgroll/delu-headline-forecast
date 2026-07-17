@@ -25,6 +25,8 @@ TARGET_COLORS = {
 MODEL_LABELS = {
     "linear_regression": "Linear Regression",
     "lightgbm": "LightGBM",
+    "xgboost": "XGBoost",
+    "catboost": "CatBoost",
 }
 
 # Slots 1 and 2 of the same fixed order — a different encoding (model
@@ -60,6 +62,8 @@ KNOWN_SCENARIO_COLORS = {
     "baseline_lightgbm": FIXED_CATEGORICAL_ORDER[1],  # green
     "perfect_foresight_weather_lightgbm": FIXED_CATEGORICAL_ORDER[2],  # magenta
     "perfect_foresight_weather_lightgbm_quarterly_refit": FIXED_CATEGORICAL_ORDER[3],  # yellow
+    "perfect_foresight_weather_xgboost_quarterly_refit": FIXED_CATEGORICAL_ORDER[4],  # aqua
+    "perfect_foresight_weather_catboost_quarterly_refit": FIXED_CATEGORICAL_ORDER[5],  # orange
 }
 
 # One color per horizon, used within a single scenario's notebook to

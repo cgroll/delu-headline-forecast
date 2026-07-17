@@ -126,6 +126,8 @@ stages:
       - data/processed/results/baseline_lightgbm.parquet
       - data/processed/results/perfect_foresight_weather_lightgbm.parquet
       - data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
+      - data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
+      - data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
     outs:
       - book/notebooks/06_scenario_overview_tables.ipynb:
           cache: false
@@ -313,6 +315,82 @@ stages:
           cache: false
       - data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
 
+  perfect_foresight_weather_xgboost_quarterly_refit:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb
+      pipeline/17_perfect_foresight_weather_xgboost_quarterly_refit.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb
+    deps:
+      - pipeline/17_perfect_foresight_weather_xgboost_quarterly_refit.py
+      - dhf/features.py
+      - dhf/splits.py
+      - dhf/viz.py
+      - dhf/reporting.py
+      - dhf/scenarios.py
+      - dhf/pecd.py
+      - data/processed/target_panel.parquet
+      - data/processed/pecd_solar_capacity_factors.parquet
+      - data/processed/pecd_wind_onshore_capacity_factors.parquet
+      - data/processed/pecd_wind_offshore_capacity_factors.parquet
+      - data/processed/pecd_temperature_de.parquet
+    outs:
+      - book/notebooks/17_perfect_foresight_weather_xgboost_quarterly_refit.ipynb:
+          cache: false
+      - output/images/17_xgb_mae_by_horizon.png:
+          cache: false
+      - output/images/17_xgb_actual_vs_predicted_summer.png:
+          cache: false
+      - output/images/17_xgb_actual_vs_predicted_winter.png:
+          cache: false
+      - output/images/17_xgb_scatter_actual_vs_predicted.png:
+          cache: false
+      - output/images/17_xgb_rolling_error.png:
+          cache: false
+      - output/images/17_xgb_feature_importance.png:
+          cache: false
+      - data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
+
+  perfect_foresight_weather_catboost_quarterly_refit:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb
+      pipeline/18_perfect_foresight_weather_catboost_quarterly_refit.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb
+    deps:
+      - pipeline/18_perfect_foresight_weather_catboost_quarterly_refit.py
+      - dhf/features.py
+      - dhf/splits.py
+      - dhf/viz.py
+      - dhf/reporting.py
+      - dhf/scenarios.py
+      - dhf/pecd.py
+      - data/processed/target_panel.parquet
+      - data/processed/pecd_solar_capacity_factors.parquet
+      - data/processed/pecd_wind_onshore_capacity_factors.parquet
+      - data/processed/pecd_wind_offshore_capacity_factors.parquet
+      - data/processed/pecd_temperature_de.parquet
+    outs:
+      - book/notebooks/18_perfect_foresight_weather_catboost_quarterly_refit.ipynb:
+          cache: false
+      - output/images/18_cb_mae_by_horizon.png:
+          cache: false
+      - output/images/18_cb_actual_vs_predicted_summer.png:
+          cache: false
+      - output/images/18_cb_actual_vs_predicted_winter.png:
+          cache: false
+      - output/images/18_cb_scatter_actual_vs_predicted.png:
+          cache: false
+      - output/images/18_cb_rolling_error.png:
+          cache: false
+      - output/images/18_cb_feature_importance.png:
+          cache: false
+      - data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
+
   scenario_overview_lead_times:
     cmd: >-
       MPLBACKEND=Agg uv run jupytext --to notebook --execute
@@ -329,6 +407,8 @@ stages:
       - data/processed/results/baseline_lightgbm.parquet
       - data/processed/results/perfect_foresight_weather_lightgbm.parquet
       - data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
+      - data/processed/results/perfect_foresight_weather_xgboost_quarterly_refit.parquet
+      - data/processed/results/perfect_foresight_weather_catboost_quarterly_refit.parquet
     outs:
       - book/notebooks/07_scenario_overview_lead_times.ipynb:
           cache: false
