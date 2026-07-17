@@ -27,10 +27,15 @@ HORIZONS_DAYS = [1, 7, 14]
 ROLLING_ERROR_WINDOW_HOURS = 24 * 7
 
 
-def describe_feature_sets(panel: pd.DataFrame) -> dict[str, list[str]]:
+def describe_feature_sets(
+    panel: pd.DataFrame, extra_features_by_target: dict[str, pd.DataFrame] | None = None
+) -> dict[str, list[str]]:
     """Feature column names per target (stable across horizons — see dhf/features.py)."""
+    extra_features_by_target = extra_features_by_target or {}
     return {
-        target: build_supervised_frame(panel, target, 24, is_load=(target == "load"))[0].columns.tolist()
+        target: build_supervised_frame(
+            panel, target, 24, is_load=(target == "load"), extra_target_time_features=extra_features_by_target.get(target)
+        )[0].columns.tolist()
         for target in TARGETS
     }
 
@@ -39,6 +44,7 @@ def fit_and_evaluate(
     panel: pd.DataFrame,
     model_factory: Callable[[], object],
     importance_fn: Callable[[object, list[str]], pd.Series],
+    extra_features_by_target: dict[str, pd.DataFrame] | None = None,
 ) -> tuple[pd.DataFrame, dict[tuple[str, int], pd.DataFrame], dict[tuple[str, int], pd.Series]]:
     """Fit one model per (target, horizon) cell; return (results, val_predictions, importances).
 
@@ -47,8 +53,14 @@ def fit_and_evaluate(
     predicted), indexed by the *target* timestamp (origin + horizon).
     `importances`: keyed by (target, horizon_days) -> feature importances
     from `importance_fn(fitted_model, feature_names)`, normalized to sum 1.
+    `extra_features_by_target`, if given, adds a scenario's extra
+    target-time features (e.g. perfect-foresight PECD capacity factor) for
+    whichever targets have an entry — targets without one get the plain
+    baseline feature set unchanged (e.g. `load`, which has no weather
+    feature yet — see docs/modeling_plan.md).
     """
     val_start, test_start = time_split(panel.index)
+    extra_features_by_target = extra_features_by_target or {}
 
     rows = []
     val_predictions: dict[tuple[str, int], pd.DataFrame] = {}
@@ -57,7 +69,13 @@ def fit_and_evaluate(
     for target in TARGETS:
         for horizon_days in HORIZONS_DAYS:
             horizon_hours = horizon_days * 24
-            X, y = build_supervised_frame(panel, target, horizon_hours, is_load=(target == "load"))
+            X, y = build_supervised_frame(
+                panel,
+                target,
+                horizon_hours,
+                is_load=(target == "load"),
+                extra_target_time_features=extra_features_by_target.get(target),
+            )
 
             train_mask = X.index < val_start
             val_mask = (X.index >= val_start) & (X.index < test_start)
@@ -83,6 +101,103 @@ def fit_and_evaluate(
                     "rmse": mean_squared_error(y_val, y_pred) ** 0.5,
                     "n_train": len(X_train),
                     "n_val": len(X_val),
+                }
+            )
+
+    return pd.DataFrame(rows), val_predictions, importances
+
+
+def periodic_windows(val_start: pd.Timestamp, test_start: pd.Timestamp, n_windows: int = 6) -> list[tuple[pd.Timestamp, pd.Timestamp]]:
+    """Split [val_start, test_start) into `n_windows` equal-length chunks.
+
+    `n_windows=6` gives ~4-month windows over this project's default
+    730-day (~2-year) validation period (see `dhf.splits.VAL_DAYS`).
+    Deliberately *not* snapped to calendar quarter starts (Jan/Apr/Jul/Oct
+    1): since `val_start` rarely lands exactly on one, that approach leaves
+    an extra short stub window and produces n_windows+1 chunks instead of
+    n_windows.
+    """
+    boundaries = pd.date_range(val_start, test_start, periods=n_windows + 1)
+    return list(zip(boundaries[:-1], boundaries[1:]))
+
+
+def fit_and_evaluate_walkforward(
+    panel: pd.DataFrame,
+    model_factory: Callable[[], object],
+    importance_fn: Callable[[object, list[str]], pd.Series],
+    extra_features_by_target: dict[str, pd.DataFrame] | None = None,
+    n_windows: int = 6,
+) -> tuple[pd.DataFrame, dict[tuple[str, int], pd.DataFrame], dict[tuple[str, int], pd.Series]]:
+    """Same contract and return shape as `fit_and_evaluate`, but refits each
+    (target, horizon) model every `n_windows`-th of the validation period on
+    an expanding window (all data strictly before that period) instead of
+    fitting once on the pre-validation training set.
+
+    Every period's own model only predicts its own period; those
+    predictions are stitched into one continuous validation-period series
+    per (target, horizon), so `results`' MAE/RMSE stay directly comparable
+    to a single-fit scenario's (same "error over the full validation
+    period" semantics) — only the refit schedule differs, everything else
+    (features, model, hyperparameters) held constant, per this project's
+    "one delta at a time" convention (see docs/modeling_plan.md). Feature
+    importances are averaged across periods rather than taken from a
+    single fit.
+    """
+    val_start, test_start = time_split(panel.index)
+    extra_features_by_target = extra_features_by_target or {}
+    windows = periodic_windows(val_start, test_start, n_windows=n_windows)
+
+    rows = []
+    val_predictions: dict[tuple[str, int], pd.DataFrame] = {}
+    importances: dict[tuple[str, int], pd.Series] = {}
+
+    for target in TARGETS:
+        for horizon_days in HORIZONS_DAYS:
+            horizon_hours = horizon_days * 24
+            X, y = build_supervised_frame(
+                panel,
+                target,
+                horizon_hours,
+                is_load=(target == "load"),
+                extra_target_time_features=extra_features_by_target.get(target),
+            )
+
+            period_cells = []
+            period_importances = []
+            train_sizes = []
+            for window_start, window_end in windows:
+                train_mask = X.index < window_start
+                window_mask = (X.index >= window_start) & (X.index < window_end)
+                X_train, y_train = X[train_mask], y[train_mask]
+                X_window, y_window = X[window_mask], y[window_mask]
+                if X_window.empty:
+                    continue
+                train_sizes.append(len(X_train))
+
+                model = model_factory()
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_window)
+
+                cell = pd.DataFrame({"actual": y_window, "predicted": y_pred})
+                cell.index = X_window.index + pd.Timedelta(hours=horizon_hours)
+                period_cells.append(cell)
+
+                importance = importance_fn(model, list(X_train.columns))
+                period_importances.append(importance / importance.sum())
+
+            cell = pd.concat(period_cells).sort_index()
+            val_predictions[(target, horizon_days)] = cell
+            importances[(target, horizon_days)] = pd.concat(period_importances, axis=1).mean(axis=1)
+
+            rows.append(
+                {
+                    "target": target,
+                    "horizon_days": horizon_days,
+                    "mae": mean_absolute_error(cell["actual"], cell["predicted"]),
+                    "rmse": mean_squared_error(cell["actual"], cell["predicted"]) ** 0.5,
+                    "n_train": train_sizes[-1],
+                    "n_val": len(cell),
+                    "n_refits": len(period_cells),
                 }
             )
 
@@ -130,6 +245,37 @@ def plot_actual_vs_predicted(
 
     handles, labels = axes[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.02), frameon=False)
+    fig.tight_layout()
+    return fig
+
+
+def plot_scatter_actual_vs_predicted(val_predictions: dict[tuple[str, int], pd.DataFrame], color: str) -> plt.Figure:
+    """Target x horizon grid of hourly actual-vs-predicted scatter, full validation period.
+
+    The black 1:1 line marks perfect agreement; a cloud that consistently
+    sits above/below it (rather than scattered evenly around it) reveals
+    systematic bias, not just random error — e.g. points below the line at
+    high actual values mean peaks are being under-predicted.
+    """
+    fig, axes = plt.subplots(len(TARGETS), len(HORIZONS_DAYS), figsize=(15, 18))
+
+    for row, target in enumerate(TARGETS):
+        for col, horizon_days in enumerate(HORIZONS_DAYS):
+            ax = axes[row, col]
+            cell = val_predictions[(target, horizon_days)]
+            ax.scatter(cell["actual"], cell["predicted"], s=2, alpha=0.15, color=color, linewidths=0)
+            max_val = max(cell["actual"].max(), cell["predicted"].max())
+            ax.plot([0, max_val], [0, max_val], color=ACTUAL_COLOR, linewidth=1, zorder=3)
+            corr = cell["actual"].corr(cell["predicted"])
+            ax.text(0.05, 0.95, f"corr={corr:.3f}", transform=ax.transAxes, va="top", fontsize=9)
+            if row == 0:
+                ax.set_title(f"{horizon_days}d horizon")
+            if col == 0:
+                ax.set_ylabel(f"{TARGET_LABELS[target]}\nPredicted (MW)")
+            if row == len(TARGETS) - 1:
+                ax.set_xlabel("Actual (MW)")
+            style_axis(ax)
+
     fig.tight_layout()
     return fig
 

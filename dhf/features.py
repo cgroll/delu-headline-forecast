@@ -83,6 +83,7 @@ def build_supervised_frame(
     target_col: str,
     horizon_hours: int,
     is_load: bool = False,
+    extra_target_time_features: pd.DataFrame | None = None,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """Build the (features, target) frame for one (target, horizon) baseline model.
 
@@ -91,6 +92,14 @@ def build_supervised_frame(
     module docstring); the target is `target_col` at `t + horizon_hours`.
     Every row is causally valid regardless of how large `horizon_hours` is —
     see docs/modeling_plan.md's phase-1 baseline description.
+
+    `extra_target_time_features`, if given, is a timestamp-indexed frame
+    (e.g. a perfect-foresight PECD capacity factor) looked up the same way
+    as the calendar features — by `t + horizon_hours`, not `t` — since it
+    describes a property of the target time, not information available at
+    the forecast origin. See docs/modeling_plan.md's phase-2 description;
+    a scenario using this is only valid in the "perfect foresight" sense,
+    not as a real operational forecast.
     """
     assert horizon_hours % 24 == 0, "horizons must be a whole number of days for calendar-feature alignment"
 
@@ -101,6 +110,10 @@ def build_supervised_frame(
     df = add_lag_features(df, target_col, horizon_hours, is_load=is_load)
     if is_load:
         df = add_weekday_dummies(df, target_index)
+    if extra_target_time_features is not None:
+        extra = extra_target_time_features.reindex(target_index)
+        extra.index = df.index
+        df = pd.concat([df, extra], axis=1)
     df["target"] = df[target_col].shift(-horizon_hours)
 
     feature_cols = [c for c in df.columns if c not in (target_col, "target")]

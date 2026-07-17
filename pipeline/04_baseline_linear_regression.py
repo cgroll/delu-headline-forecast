@@ -41,6 +41,7 @@ from dhf.reporting import (
     plot_importance_heatmaps,
     plot_mae_by_horizon,
     plot_rolling_error,
+    plot_scatter_actual_vs_predicted,
 )
 from dhf.scenarios import save_scenario_metrics
 from dhf.splits import EXAMPLE_WINDOWS
@@ -149,6 +150,24 @@ fig.savefig(paths.images_path / "04_lr_actual_vs_predicted_summer.png", dpi=150,
 fig = plot_actual_vs_predicted(val_predictions, EXAMPLE_WINDOWS["winter"], color=COLOR, model_label=MODEL_LABEL)
 fig.suptitle(f"{MODEL_LABEL} — actual vs. predicted, winter window", y=1.04)
 fig.savefig(paths.images_path / "04_lr_actual_vs_predicted_winter.png", dpi=150, bbox_inches="tight")
+
+# %% [markdown]
+# ## Actual vs. predicted — scatter, full validation period
+#
+# The 1:1 line marks perfect agreement; a cloud that consistently sits off
+# to one side (rather than scattered evenly around it) reveals systematic
+# bias — e.g. points below the line at high actual values mean peaks are
+# under-predicted.
+#
+# ```{figure} ../../output/images/04_lr_scatter_actual_vs_predicted.png
+# :name: fig-04-lr-scatter-actual-vs-predicted
+# Hourly actual vs. predicted, full validation period, by target and horizon.
+# ```
+
+# %%
+fig = plot_scatter_actual_vs_predicted(val_predictions, color=COLOR)
+fig.suptitle(f"{MODEL_LABEL} — actual vs. predicted scatter, full validation period", y=1.01)
+fig.savefig(paths.images_path / "04_lr_scatter_actual_vs_predicted.png", dpi=150, bbox_inches="tight")
 
 # %% [markdown]
 # ## Error analysis — full validation period

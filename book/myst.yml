@@ -15,10 +15,16 @@ project:
     - title: EDA
       children:
         - file: notebooks/03_eda.ipynb
+        - file: notebooks/09_pecd_zones_eda.ipynb
+        - file: notebooks/12_pecd_mastr_comparison_eda.ipynb
     - title: Baseline Forecasts
       children:
         - file: notebooks/04_baseline_linear_regression.ipynb
         - file: notebooks/05_baseline_lightgbm.ipynb
+    - title: Phase 2 - Weather Value Check
+      children:
+        - file: notebooks/13_perfect_foresight_weather_lightgbm.ipynb
+        - file: notebooks/16_perfect_foresight_weather_lightgbm_quarterly_refit.ipynb
     - title: Scenario Overview
       children:
         - file: notebooks/06_scenario_overview_tables.ipynb

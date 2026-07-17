@@ -58,6 +58,8 @@ FIXED_CATEGORICAL_ORDER = [
 KNOWN_SCENARIO_COLORS = {
     "baseline_linear_regression": FIXED_CATEGORICAL_ORDER[0],  # blue
     "baseline_lightgbm": FIXED_CATEGORICAL_ORDER[1],  # green
+    "perfect_foresight_weather_lightgbm": FIXED_CATEGORICAL_ORDER[2],  # magenta
+    "perfect_foresight_weather_lightgbm_quarterly_refit": FIXED_CATEGORICAL_ORDER[3],  # yellow
 }
 
 # One color per horizon, used within a single scenario's notebook to

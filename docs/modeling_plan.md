@@ -90,19 +90,55 @@ demand reconstruction from weather + standard load profiles).
 
 ## Phase 3 — real forecasts (not started)
 
-Only pursue this if phase 2 shows a clear, horizon-consistent improvement
-over phase 1. Replace perfect-foresight PECD capacity factors with:
+Phase 2 (`perfect_foresight_weather_lightgbm`) already shows a clear,
+horizon-consistent improvement over phase 1 for pv/wind_onshore/wind_offshore
+(40-84% MAE reduction) — the bar CLAUDE.md set for pursuing this phase is
+cleared. Split into two sub-steps rather than one jump, so that "own
+capacity-factor computation is worse than PECD's" and "real forecasts are
+genuinely uncertain" can't get tangled into a single confusing result —
+each sub-step changes exactly one variable relative to the last validated
+state, matching this project's "one delta at a time" convention (e.g. how
+the LightGBM weather scenario kept the model fixed and changed only the
+feature set relative to the LightGBM baseline).
 
-- Actual weather **forecasts** at the relevant lead time (source TBD — ECMWF
-  extended-range/S2S products are the natural fit for horizons out to 35
-  days; day-ahead-only NWP products won't cover the longer horizons).
-- Our **own capacity-factor computation** from raw forecast weather
-  variables (temperature, wind speed, irradiance) — see
-  `flexa-challenge`'s `pv_power_proxy_flow` (pvlib Faiman/PVWatts chain) and
-  `world-of-energy`'s `33/34_*_renewables_ninja_generations.py` for two
-  different prior approaches to this exact problem.
+### Phase 3a — reconstruct capacity factors from raw ERA5 (still perfect foresight)
 
-Not scoped further here — revisit once phase 2 has a result.
+Still uses ERA5 reanalysis (the same underlying weather PECD itself derives
+its capacity factors from) — i.e. still perfect foresight, nothing about
+forecast uncertainty changes yet. What changes is *who* computes the
+capacity factor: instead of consuming PECD's precomputed capacity factor
+product, compute it ourselves from raw weather variables (temperature, wind
+speed, irradiance) via a power-curve/PV model — see `flexa-challenge`'s
+`pv_power_proxy_flow` (pvlib Faiman/PVWatts chain) and `world-of-energy`'s
+`33/34_*_renewables_ninja_generations.py` for two different prior
+approaches to this exact problem.
+
+The point of doing this against ERA5 first, rather than jumping straight to
+phase 3b: it's a **validation step**. Compare the resulting own-computed
+capacity factor against PECD's (already validated against actual SMARD
+generation at 0.90-0.985 correlation, see
+`pipeline/12_pecd_mastr_comparison_eda.ipynb`) — if they don't track well,
+that's a bug/gap in the own methodology, caught cleanly before forecast
+uncertainty is ever introduced as a confound. It's not throwaway work
+either: phase 3b needs this same pipeline regardless, since real forecast
+products hand you raw weather variables, not pre-packaged capacity
+factors — building and validating it here is required groundwork either
+way.
+
+### Phase 3b — swap in real weather forecasts
+
+Only once phase 3a's own-CF pipeline is validated against ERA5: swap the
+*weather input* from ERA5 (perfect foresight) to actual forecast products
+at the relevant lead time (source TBD — ECMWF extended-range/S2S products
+are the natural fit for horizons out to 35 days; day-ahead-only NWP
+products won't cover the longer horizons), reusing the same, now-validated
+capacity-factor computation from phase 3a unchanged. This isolates forecast
+uncertainty as the only variable that moved relative to phase 3a, and is
+the first point in the project where "perfect foresight" stops being an
+assumption.
+
+Not scoped further here — revisit each sub-step once the previous one has a
+result.
 
 ## Bookkeeping convention
 

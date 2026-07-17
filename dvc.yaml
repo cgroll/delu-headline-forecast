@@ -75,6 +75,8 @@ stages:
           cache: false
       - output/images/04_lr_actual_vs_predicted_winter.png:
           cache: false
+      - output/images/04_lr_scatter_actual_vs_predicted.png:
+          cache: false
       - output/images/04_lr_rolling_error.png:
           cache: false
       - output/images/04_lr_feature_importance.png:
@@ -106,6 +108,8 @@ stages:
           cache: false
       - output/images/05_lgbm_actual_vs_predicted_winter.png:
           cache: false
+      - output/images/05_lgbm_scatter_actual_vs_predicted.png:
+          cache: false
       - output/images/05_lgbm_rolling_error.png:
           cache: false
       - output/images/05_lgbm_feature_importance.png:
@@ -120,9 +124,194 @@ stages:
       - dhf/viz.py
       - data/processed/results/baseline_linear_regression.parquet
       - data/processed/results/baseline_lightgbm.parquet
+      - data/processed/results/perfect_foresight_weather_lightgbm.parquet
+      - data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
     outs:
       - book/notebooks/06_scenario_overview_tables.ipynb:
           cache: false
+
+  download_pecd_masks:
+    cmd: uv run python pipeline/08_download_pecd_masks.py
+    deps:
+      - pipeline/08_download_pecd_masks.py
+    outs:
+      - data/downloads/pecd/peon_region_mask.nc:
+          persist: true
+      - data/downloads/pecd/peof_region_mask.nc:
+          persist: true
+
+  pecd_zones_eda:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/09_pecd_zones_eda.ipynb
+      pipeline/09_pecd_zones_eda.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/09_pecd_zones_eda.ipynb
+    deps:
+      - pipeline/09_pecd_zones_eda.py
+      - data/downloads/pecd/peon_region_mask.nc
+      - data/downloads/pecd/peof_region_mask.nc
+    outs:
+      - book/notebooks/09_pecd_zones_eda.ipynb:
+          cache: false
+      - output/images/09_pecd_wind_zones_de.png:
+          cache: false
+      - data/processed/pecd_wind_zones.geojson
+
+  download_pecd_capacity_factors:
+    cmd: uv run python pipeline/10_download_pecd_capacity_factors.py
+    deps:
+      - pipeline/10_download_pecd_capacity_factors.py
+    outs:
+      - data/downloads/pecd/capacity_factors/solar_tech60.zip:
+          persist: true
+      - data/downloads/pecd/capacity_factors/solar_tech61.zip:
+          persist: true
+      - data/downloads/pecd/capacity_factors/solar_tech62.zip:
+          persist: true
+      - data/downloads/pecd/capacity_factors/solar_tech63.zip:
+          persist: true
+      - data/downloads/pecd/capacity_factors/wind_onshore_tech30.zip:
+          persist: true
+      - data/downloads/pecd/capacity_factors/wind_offshore_tech20.zip:
+          persist: true
+
+  process_pecd_capacity_factors:
+    cmd: uv run python pipeline/11_process_pecd_capacity_factors.py
+    deps:
+      - pipeline/11_process_pecd_capacity_factors.py
+      - dhf/pecd.py
+      - data/downloads/pecd/capacity_factors/solar_tech60.zip
+      - data/downloads/pecd/capacity_factors/solar_tech61.zip
+      - data/downloads/pecd/capacity_factors/solar_tech62.zip
+      - data/downloads/pecd/capacity_factors/solar_tech63.zip
+      - data/downloads/pecd/capacity_factors/wind_onshore_tech30.zip
+      - data/downloads/pecd/capacity_factors/wind_offshore_tech20.zip
+    outs:
+      - data/processed/pecd_solar_capacity_factors.parquet
+      - data/processed/pecd_wind_onshore_capacity_factors.parquet
+      - data/processed/pecd_wind_offshore_capacity_factors.parquet
+
+  download_pecd_temperature:
+    cmd: uv run python pipeline/14_download_pecd_temperature.py
+    deps:
+      - pipeline/14_download_pecd_temperature.py
+    outs:
+      - data/downloads/pecd/temperature_de_fv1.zip:
+          persist: true
+      - data/downloads/pecd/temperature_de_fv2.zip:
+          persist: true
+
+  process_pecd_temperature:
+    cmd: uv run python pipeline/15_process_pecd_temperature.py
+    deps:
+      - pipeline/15_process_pecd_temperature.py
+      - dhf/pecd.py
+      - data/downloads/pecd/temperature_de_fv1.zip
+      - data/downloads/pecd/temperature_de_fv2.zip
+    outs:
+      - data/processed/pecd_temperature_de.parquet
+
+  pecd_mastr_comparison_eda:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/12_pecd_mastr_comparison_eda.ipynb
+      pipeline/12_pecd_mastr_comparison_eda.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/12_pecd_mastr_comparison_eda.ipynb
+    deps:
+      - pipeline/12_pecd_mastr_comparison_eda.py
+      - dhf/pecd.py
+      - dhf/viz.py
+      - data/processed/target_panel.parquet
+      - data/processed/pecd_solar_capacity_factors.parquet
+      - data/processed/pecd_wind_onshore_capacity_factors.parquet
+      - data/processed/pecd_wind_offshore_capacity_factors.parquet
+    outs:
+      - book/notebooks/12_pecd_mastr_comparison_eda.ipynb:
+          cache: false
+      - output/images/12_pecd_mastr_implied_vs_actual_timeseries.png:
+          cache: false
+      - output/images/12_pecd_mastr_implied_vs_actual_scatter.png:
+          cache: false
+
+  perfect_foresight_weather_lightgbm:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/13_perfect_foresight_weather_lightgbm.ipynb
+      pipeline/13_perfect_foresight_weather_lightgbm.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/13_perfect_foresight_weather_lightgbm.ipynb
+    deps:
+      - pipeline/13_perfect_foresight_weather_lightgbm.py
+      - dhf/features.py
+      - dhf/splits.py
+      - dhf/viz.py
+      - dhf/reporting.py
+      - dhf/scenarios.py
+      - dhf/pecd.py
+      - data/processed/target_panel.parquet
+      - data/processed/pecd_solar_capacity_factors.parquet
+      - data/processed/pecd_wind_onshore_capacity_factors.parquet
+      - data/processed/pecd_wind_offshore_capacity_factors.parquet
+      - data/processed/pecd_temperature_de.parquet
+    outs:
+      - book/notebooks/13_perfect_foresight_weather_lightgbm.ipynb:
+          cache: false
+      - output/images/13_pfw_mae_by_horizon.png:
+          cache: false
+      - output/images/13_pfw_actual_vs_predicted_summer.png:
+          cache: false
+      - output/images/13_pfw_actual_vs_predicted_winter.png:
+          cache: false
+      - output/images/13_pfw_scatter_actual_vs_predicted.png:
+          cache: false
+      - output/images/13_pfw_rolling_error.png:
+          cache: false
+      - output/images/13_pfw_feature_importance.png:
+          cache: false
+      - data/processed/results/perfect_foresight_weather_lightgbm.parquet
+
+  perfect_foresight_weather_lightgbm_quarterly_refit:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/16_perfect_foresight_weather_lightgbm_quarterly_refit.ipynb
+      pipeline/16_perfect_foresight_weather_lightgbm_quarterly_refit.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/16_perfect_foresight_weather_lightgbm_quarterly_refit.ipynb
+    deps:
+      - pipeline/16_perfect_foresight_weather_lightgbm_quarterly_refit.py
+      - dhf/features.py
+      - dhf/splits.py
+      - dhf/viz.py
+      - dhf/reporting.py
+      - dhf/scenarios.py
+      - dhf/pecd.py
+      - data/processed/target_panel.parquet
+      - data/processed/pecd_solar_capacity_factors.parquet
+      - data/processed/pecd_wind_onshore_capacity_factors.parquet
+      - data/processed/pecd_wind_offshore_capacity_factors.parquet
+      - data/processed/pecd_temperature_de.parquet
+    outs:
+      - book/notebooks/16_perfect_foresight_weather_lightgbm_quarterly_refit.ipynb:
+          cache: false
+      - output/images/16_qr_mae_by_horizon.png:
+          cache: false
+      - output/images/16_qr_actual_vs_predicted_summer.png:
+          cache: false
+      - output/images/16_qr_actual_vs_predicted_winter.png:
+          cache: false
+      - output/images/16_qr_scatter_actual_vs_predicted.png:
+          cache: false
+      - output/images/16_qr_rolling_error.png:
+          cache: false
+      - output/images/16_qr_feature_importance.png:
+          cache: false
+      - data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
 
   scenario_overview_lead_times:
     cmd: >-
@@ -138,6 +327,8 @@ stages:
       - dhf/viz.py
       - data/processed/results/baseline_linear_regression.parquet
       - data/processed/results/baseline_lightgbm.parquet
+      - data/processed/results/perfect_foresight_weather_lightgbm.parquet
+      - data/processed/results/perfect_foresight_weather_lightgbm_quarterly_refit.parquet
     outs:
       - book/notebooks/07_scenario_overview_lead_times.ipynb:
           cache: false

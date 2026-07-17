@@ -76,39 +76,207 @@ and v4.1 is being phased out (deprecated for anything v4.2 covers; not
 extended beyond 2021). `world-of-energy`'s existing PECD pipeline
 (`pipeline/35_download_pecd_regions.py`, `36_process_pecd_regions.py`,
 `50_download_pecd_nuts1_de.py`, `51_process_pecd_nuts1_de.py`) targets the
-**v4.1** dataset ID `sis-energy-derived-reanalysis`, at NUTS0 (country) and
-NUTS1 (German Bundesländer) resolution. Use it as a *pattern* (ZIP download
-via `cdsapi`, metadata-header CSV parsing, wide-format parquet with
-MultiIndex columns) — not as a direct dependency — since this project needs:
+**v4.1** dataset ID `sis-energy-derived-reanalysis`. Use it as a *pattern*
+(ZIP download via `cdsapi`, metadata-header CSV parsing, wide-format
+parquet with MultiIndex columns) — not as a direct dependency, since v4.2's
+request schema and spatial-aggregation options differ substantially (see
+below, confirmed empirically against the CDS API — the CDS web form doesn't
+publish a static parameter reference, so this was reverse-engineered from
+the dataset's `form.json`/`constraints.json` plus test downloads).
 
-- **Dataset ID `sis-energy-pecd`** (v4.2), not `sis-energy-derived-reanalysis`.
-- **NUTS2 spatial aggregation** (`sub_country_level`, `nuts_level: "2"`),
-  not NUTS1 or country level — the resolution MaStR capacity data is
-  available at.
-- Variables: `solar_photovoltaic_power_generation`,
-  `wind_power_generation_onshore`, `wind_power_generation_offshore`;
-  product type `capacity_factor_ratio`.
-
-**Known gotcha (offshore wind spatial aggregation):** per the CDS v4.2
-documentation, the NUTS0 aggregation level for wind indicators (onshore and
-offshore) has been removed from the download form due to methodological
-inconsistencies, and v4.2 introduces two *new* aggregation schemes — P2ON
-(Pan-European Onshore Zones) and P2OF (Pan-European Offshore Zones) — built
-for ENTSO-E's ERAA 2026 adequacy assessment. Offshore wind has no NUTS2
-concept (it's not part of any land NUTS region), so check what spatial units
-v4.2 actually offers for offshore wind capacity factors (likely
-`maritime_country_level`, as v4.1 used, and/or the new PEOF zones) before
-assuming a clean join to MaStR's offshore pseudo-regions — see the MaStR
-section below and the open question in CLAUDE.md.
-
-**Requires** a `~/.cdsapirc` file with a valid CDS API key (same requirement
-`world-of-energy`'s scripts have).
+**Requires** a `~/.cdsapirc` file with a valid CDS API key. Requests queue
+server-side and can take several minutes even for a single small file —
+budget for that when scripting multiple downloads.
 
 **Docs:**
 [CDS dataset page](https://cds.climate.copernicus.eu/datasets/sis-energy-pecd) ·
 [v4.2 product user guide](https://confluence.ecmwf.int/pages/viewpage.action?pageId=540941752) ·
 [C3S forum: v4.2 release](https://forum.ecmwf.int/t/new-pecd-version-4-2-co-developed-with-entso-e-now-available-on-the-cds/13497) ·
 [C3S forum: v4.1 deprecation](https://forum.ecmwf.int/t/updates-to-the-climate-and-energy-related-variables-from-the-pan-european-climate-database-pecd-v4-2-and-deprecation-of-v4-1/14348)
+
+### v4.2 API essentials (`sis-energy-pecd`)
+
+Every request for historical (ERA5-based) data needs these fixed keys:
+
+```python
+{
+    "pecd_version": "pecd4_2",
+    "temporal_period": "historical",
+    "origin": "era5_reanalysis",
+    "file_version": "fv1",
+    # plus: variable, technology, (energy_scenario), spatial_resolution, year, month
+}
+```
+
+No `energy_product_type` or `format` key is needed (unlike v4.1) — "capacity
+factor" is baked into the variable name itself, and the API returns a ZIP
+(containing one CSV) regardless.
+
+**Variables** (capacity factor only — this project doesn't need the raw
+weather drivers, see CLAUDE.md phase 2 scope):
+`solar_photovoltaic_generation_capacity_factor`,
+`wind_power_onshore_capacity_factor`, `wind_power_offshore_capacity_factor`.
+
+**`technology`** selects a turbine/panel spec. To represent the *currently
+installed* fleet (what this project needs for perfect-foresight weighting
+by MaStR capacity) rather than a hypothetical future build, use **"Existing
+technologies"**: `"20"` for offshore wind, `"30"` for onshore wind. Solar has
+no "existing" catch-all — instead four sub-categories that roughly mirror
+MaStR's behind-the-meter split: `"60"` (industrial rooftop), `"61"`
+(residential rooftop), `"62"` (utility-scale fixed), `"63"` (utility-scale
+1-axis tracker).
+
+**`energy_scenario`** ("Wind power installation area assumption",
+`resource_grade_a`/`resource_grade_b`) only applies to wind. Confirmed via
+the CDS constraints: technology `"20"`/`"30"` ("Existing technologies") is
+**only** offered under `resource_grade_b` — `resource_grade_a` doesn't
+include it. Not applicable to solar.
+
+**`spatial_resolution` — confirmed valid options per variable** (this is
+the important gotcha, superseding the original assumption that NUTS2 would
+cover all three variables):
+
+| Variable | Valid `spatial_resolution` values |
+|---|---|
+| Solar PV | `nuts_0`, `nuts_2`, `p2on`, `peon`, `szon` |
+| Wind onshore | `p2on`, `peon` **only** — no `nuts_0`, no `nuts_2` |
+| Wind offshore | `p2of`, `peof` **only** |
+
+So **solar cleanly joins to MaStR at NUTS2**; **wind (on- and offshore) does
+not** — v4.2 offers no NUTS-anything for wind, only two pan-European zone
+schemes: PEON/PEOF ("Pan-European Onshore/Offshore Zones", built for
+ENTSO-E's ERAA2025) and the newer P2ON/P2OF (ERAA2026 revision). This
+project uses PEON/PEOF (the more established of the two schemes; P2ON/P2OF
+wasn't evaluated in detail, might be worth a second look if PEON/PEOF turns
+out to be undesirable for some reason).
+
+**`year`**: historical ERA5-based coverage runs **1950–2025** for the
+variables/technologies above (confirmed via `constraints.json`; 2026 exists
+as a separate, differently-constrained partial entry — not used here). The
+CDS year filter is respected (a request for `year: "2020"` returns exactly
+that year, not the full back-catalogue, unlike some v4.1 behavior).
+
+### Germany's PEON/PEOF zone membership
+
+Confirmed by inspecting the actual returned CSV column headers (the zone
+codes aren't documented anywhere; this required a real API call):
+
+- **PEON (onshore): 7 zones** — `DE01`, `DE02`, `DE03`, `DE04`, `DE05`,
+  `DE06`, `DE07`. These are **not** NUTS codes — a different, ENTSO-E-defined
+  partition. Polygonizing them (see below) shows they tile Germany
+  contiguously with no overlaps, in geographically sensible groups (e.g.
+  NW-coastal, NE, W, E-central, W-central, SW, SE/Bavaria); combined area
+  ≈354,000 km², matching Germany's real area (≈357,000 km²).
+- **PEOF (offshore): 6 zones** — `DE011_OFF`, `DE012_OFF`, `DE013_OFF`,
+  `DE014_OFF`, `DE015_OFF` (5 sub-zones in the North Sea, ≈41,000 km²
+  combined) and `DE02_OFF` (1 zone covering the whole Baltic Sea, ≈16,700
+  km²). Maps reasonably well onto MaStR's two offshore pseudo-regions: `DE02`
+  ↔ `DEZZ-OSTSEE` is a clean 1:1, while `DEZZ-NORDSEE` would need to fan out
+  across the 5 North Sea sub-zones.
+
+### Getting the underlying grid mask (zone geometry)
+
+The zone boundaries aren't published as a shapefile — CDS's own product
+guide states the source shapefiles (`DTU-PECD40-Polygons_VF20230127` for
+PEON, `PECD42_VF20241002` for PEOF, provided to C3S by ENTSO-E) are **not
+publicly available**. What *is* available is the same information
+rasterized, via a separate "Weights and masks" variable group (distinct
+from the timeseries `variable` group above — no `temporal_period`, `origin`,
+`year`, `month`, `spatial_resolution`, `technology`, or `energy_scenario`
+keys apply):
+
+```python
+{
+    "pecd_version": "pecd4_2",
+    "file_version": "fv1",
+    "variable": "peon_region_mask",  # or peof_region_mask, nuts_2_region_mask, ...
+}
+```
+
+Also available in this group: `p2on_region_mask`, `p2of_region_mask`,
+`nuts_0_region_mask`, `szon_region_mask`, `szof_region_mask` (a third,
+"synchronous zone" scheme), plus non-region layers (`solar_pv_mask`,
+`population_density_mask`, wind-speed climatologies, `city_coords`,
+`latitude_weights`).
+
+**Structure** (NetCDF, zipped to a single `.nc` file inside): dims
+`(region, latitude, longitude)`, data variable `mask`. The grid is fixed at
+**0.25 degree resolution, 229 latitudes × 305 longitudes**, spanning lat
+75.0..18.0 (descending) and lon -31.0..45.0 — the full PECD/ERA5-Europe
+domain. **Every mask variable shares this identical grid** (confirmed:
+`peon_region_mask` and `nuts_2_region_mask` have byte-identical
+`latitude`/`longitude` coordinate arrays) — no reprojection is needed to
+combine two different masks cell-by-cell.
+
+**Values are fractional, not boolean.** `mask` gives the fraction (0.0–1.0)
+of each 0.25° grid cell actually covered by that region's polygon — a
+boundary cell can have nonzero membership in several regions at once, and
+fractions across *all* of a scheme's ~100–600 European regions sum to ≈1.0
+per cell. Confirmed example: the grid cell at lat=54.00, lon=10.75 (near the
+German/Danish border, Schleswig-Holstein) has `DE01=0.8609`, `DE02=0.0429`
+in the PEON mask — the remaining ≈9.6% belongs to a neighboring Danish PEON
+zone.
+
+File sizes: PEON mask ≈85 MB (153 European regions), PEOF mask ≈35 MB (124
+regions), NUTS2 mask ≈335 MB (629 regions — Eurostat NUTS2 covers far more
+of Europe than either wind zone scheme).
+
+### Deriving zone polygons or a region-to-region crosswalk from the mask
+
+**For a visual/vector polygon per zone** (e.g. to sanity-check the zones —
+see `pipeline/09_pecd_zones_eda.py` in this project): threshold each cell
+and dissolve. Thresholding each zone *independently* (e.g. "keep cells
+>50%") leaves visible gaps at 3-way boundary splits, where no single zone
+reaches the threshold — assigning each cell to whichever zone has the
+**highest** fraction there (argmax) instead avoids this; every cell touched
+by the scheme gets assigned to exactly one zone.
+
+**For a capacity-weighted region-to-region crosswalk** (e.g. redistributing
+MaStR's NUTS2-aggregated capacity to PEON zones) — this is the more useful
+operation and doesn't require polygonizing anything. Since both masks share
+the identical grid, the area overlap between a source region and a target
+zone is a direct cell-by-cell reduction over the two masks:
+
+```
+overlap_fraction[source_region, target_zone] =
+    sum_over_cells( source_mask[source_region, cell] * target_mask[target_zone, cell] )
+    / sum_over_cells( source_mask[source_region, cell] )
+```
+
+i.e. "what fraction of `source_region`'s area falls inside `target_zone`."
+Compute this once (pure geometry, no time dimension) as a weight matrix,
+then redistribute any (region, month) capacity panel to zones via
+`capacity_by_zone = capacity_by_region @ overlap_fraction`. This implicitly
+assumes capacity is spread **uniformly by area** within each source region —
+a real approximation (wind turbines cluster along ridgelines/coasts rather
+than sitting uniformly across a whole NUTS2 region), but consistent with
+only having region-aggregated MaStR capacity to start from (see the MaStR
+section below — raw unit-level coordinates are deliberately not used here).
+For MaStR's offshore pseudo-regions (`DEZZ-NORDSEE`/`DEZZ-OSTSEE`), use the
+`offshore_regions_file` hull polygon (rasterized onto the same grid) as the
+source mask in place of NUTS2.
+
+**For point data** (only relevant if ever working from raw MaStR unit
+coordinates instead of the region-aggregated panels): find the nearest grid
+cell to the point, then take the argmax fraction **restricted to the
+target country's own zones** (ignore a neighboring country's zone even if
+it nominally wins that boundary cell — the point's country is already
+known). Fall back to the nearest zone by centroid distance for the rare
+cell with zero domestic-zone coverage (only occurs right at a border, where
+the cell is entirely claimed by the neighboring country's zone).
+
+### What's already available in this project (delu-headline-forecast)
+
+- `data/downloads/pecd/peon_region_mask.nc`, `peof_region_mask.nc` — the two
+  masks, downloaded by `pipeline/08_download_pecd_masks.py`.
+- `data/processed/pecd_wind_zones.geojson` — derived vector polygons per
+  zone (current version uses the simple per-zone >50% threshold, which has
+  the boundary-gap artifact described above — switch to argmax if building
+  on this elsewhere). From `pipeline/09_pecd_zones_eda.py`.
+- The NUTS2 mask (`nuts_2_region_mask`) was fetched only as a one-off
+  diagnostic (confirming grid alignment with PEON/PEOF) and isn't persisted
+  here — re-download it wherever the NUTS2↔PEON/PEOF crosswalk is actually
+  built (e.g. in `mastr-power-capacities-germany`).
 
 ## MaStR (Marktstammdatenregister) — installed capacity
 
