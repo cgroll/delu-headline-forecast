@@ -106,20 +106,50 @@ Not scoped further here — revisit once phase 2 has a result.
 
 ## Bookkeeping convention
 
-Follow `~/research/flexa-challenge`'s pattern once the first scenario has a
-result to record (don't create these files preemptively/empty):
+Adapted from `~/research/flexa-challenge`'s pattern (per-scenario JSON metric
+files + a hardcoded-list Snakemake aggregation stage) to this project's DVC
+setup — implemented starting with the two baseline scenarios
+(`04_baseline_linear_regression`, `05_baseline_lightgbm`):
 
 - **One pipeline script (+ notebook) per scenario**, named descriptively
-  (e.g. `xx_pv_1d_baseline_lgbm.py`, `xx_pv_1d_pecd_capweighted.py`) —
-  mirrors this template's `pipeline/01_*`/`02_*` numbering convention (see
-  `contribution_conventions.md`).
+  (e.g. `04_baseline_linear_regression.py`, later something like
+  `xx_pv_pecd_capweighted.py`). Every scenario notebook follows the same
+  internal structure — features used, MAE/RMSE table, actual-vs-predicted
+  (a summer and a winter window), full-period rolling error, feature
+  importance — so scenarios are easy to compare section-by-section; the
+  shared computation/plotting code lives in `dhf/reporting.py`, not
+  duplicated per notebook.
+- **Each scenario writes one metrics file** to
+  `data/processed/results/<scenario_id>.parquet` via
+  `dhf.scenarios.save_scenario_metrics()` — one row per (target, horizon)
+  with `mae`, `rmse`, plus scenario metadata (`title`, `description`,
+  `notebook` link, `valid`). `valid=False` marks a scenario that uses
+  information that wouldn't really be available at forecast time (e.g.
+  perfect-foresight PECD capacity factors in phase 2, or an unvalidated
+  real forecast in phase 3) — every scenario so far is `valid=True`, since
+  lagged/calendar features are all genuinely available at forecast time
+  (modulo the publication-lag caveat noted above, deliberately ignored for
+  now).
+- **Two overview pages read every scenario's metrics file back** — no
+  numbers are recomputed, only reshaped/plotted:
+  - `06_scenario_overview_tables.py` — a pure script (not jupytext; writes
+    the notebook directly via `nbformat`, all-markdown, mirroring flexa's
+    `09_task1_overview.py`) producing one GFM comparison table per headline
+    variable: one row per scenario, MAE/RMSE per horizon, validity, and a
+    link to that scenario's own notebook.
+  - `07_scenario_overview_lead_times.py` — line charts (MAE and RMSE vs.
+    horizon, one line per scenario, one panel per target), colors assigned
+    via `dhf.viz.assign_scenario_colors()` so a scenario's color is stable
+    across every chart it appears in.
+  - Both glob `data/processed/results/*.parquet` (`dhf.scenarios.load_all_scenario_metrics`)
+    rather than hardcoding a scenario list — adding scenario \#3 only means
+    adding its pipeline script + a `dvc.yaml` dependency edge into these two
+    stages, no code change in the overview pages themselves.
 - **A running "modeling learnings" markdown file at repo root**
   (`modeling_learnings.md`, analogous to flexa's `task_1_modeling_learnings.md`)
-  logging every scenario tried: what changed, the resulting error per
-  target/horizon, whether it's a genuine improvement or a diagnostic-only
-  scenario (mark data-snooping/upper-bound scenarios explicitly invalid, as
-  flexa's `lgbm_scaled_snoop_decomposed` did), and *why* it did or didn't
-  help.
+  — not yet started; add once a scenario produces a result worth narrating
+  beyond what the tables/charts already show (what changed, why it did or
+  didn't help).
 - **`TODO.md` at repo root** for open follow-ups not yet implemented, so
   ideas aren't lost between sessions.
 - **Book narrative pages** (`book/markdown/`) summarizing the modeling
@@ -143,3 +173,13 @@ result to record (don't create these files preemptively/empty):
   independent 35-day forecasts to be evaluable at all.
 - **DE-LU vs. DE-only weather/capacity coverage** (Luxembourg gap — see
   `docs/data_sources.md`).
+- **Publication lag on the short lags is currently ignored.** The baseline
+  assumes e.g. a forecast issued at 14:00 tomorrow can use today's 14:00
+  observation (a clean 24h lag) — in reality SMARD generation/load figures
+  for "yesterday" are likely published in a daily batch, not continuously,
+  so for some hours the 24h lag would actually only be a few hours old by
+  publication time rather than a full day. Deliberately ignored for now: it
+  only meaningfully affects the 1-day horizon, and the project's real
+  interest is the 7-35 day horizons where a few hours of slop on a 24-48h
+  lag is negligible. Revisit before ever treating a 1-day-horizon model as
+  operational.

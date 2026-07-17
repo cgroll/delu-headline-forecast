@@ -12,9 +12,17 @@ project:
   github: cgroll/delu-headline-forecast
   toc:
     - file: markdown/index.md
-    - title: Analysis
+    - title: EDA
       children:
-        - file: notebooks/02_analyse_example.ipynb
+        - file: notebooks/03_eda.ipynb
+    - title: Baseline Forecasts
+      children:
+        - file: notebooks/04_baseline_linear_regression.ipynb
+        - file: notebooks/05_baseline_lightgbm.ipynb
+    - title: Scenario Overview
+      children:
+        - file: notebooks/06_scenario_overview_tables.ipynb
+        - file: notebooks/07_scenario_overview_lead_times.ipynb
 site:
   options:
     folders: true

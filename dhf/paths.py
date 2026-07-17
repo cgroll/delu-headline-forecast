@@ -77,18 +77,47 @@ class ProjPaths:
         return self.output_path / "reports"
 
     # ------------------------------------------------------------------ #
-    # Example data files — replace with project-specific paths            #
+    # SMARD data files                                                     #
     # ------------------------------------------------------------------ #
 
     @property
-    def example_raw_file(self) -> Path:
-        """Raw example dataset (parquet)."""
-        return self.downloads_path / "example_data.parquet"
+    def smard_downloads_path(self) -> Path:
+        """Raw SMARD series downloads directory."""
+        return self.downloads_path / "smard"
+
+    def smard_raw_file(self, name: str) -> Path:
+        """Raw hourly SMARD series parquet.
+
+        `name` is one of: pv, wind_onshore, wind_offshore, load.
+        """
+        return self.smard_downloads_path / f"{name}.parquet"
+
+    # ------------------------------------------------------------------ #
+    # Processed data files                                                 #
+    # ------------------------------------------------------------------ #
 
     @property
-    def example_processed_file(self) -> Path:
-        """Processed example dataset (parquet)."""
-        return self.processed_data_path / "example_processed.parquet"
+    def target_panel_file(self) -> Path:
+        """Combined hourly DE-LU target panel (pv, wind_onshore, wind_offshore, load columns, MW)."""
+        return self.processed_data_path / "target_panel.parquet"
+
+    @property
+    def results_path(self) -> Path:
+        """Per-scenario metrics parquet files — see dhf/scenarios.py."""
+        return self.processed_data_path / "results"
+
+    def scenario_results_file(self, scenario_id: str) -> Path:
+        """Per-(target, horizon) MAE/RMSE results + metadata for one scenario."""
+        return self.results_path / f"{scenario_id}.parquet"
+
+    # ------------------------------------------------------------------ #
+    # Book                                                                 #
+    # ------------------------------------------------------------------ #
+
+    @property
+    def book_notebooks_path(self) -> Path:
+        """Executed notebooks directory consumed by the MyST book."""
+        return self._project_path / "book" / "notebooks"
 
     # ------------------------------------------------------------------ #
     # Helpers                                                              #
@@ -101,6 +130,8 @@ class ProjPaths:
             self.processed_data_path,
             self.images_path,
             self.reports_path,
+            self.smard_downloads_path,
+            self.results_path,
         ]
         for d in dirs:
             d.mkdir(parents=True, exist_ok=True)

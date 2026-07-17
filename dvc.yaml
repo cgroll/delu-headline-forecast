@@ -1,27 +1,147 @@
 stages:
-  download_example:
-    cmd: uv run python pipeline/01_download_example.py
+  download_smard:
+    cmd: uv run python pipeline/01_download_smard.py
     deps:
-      - pipeline/01_download_example.py
+      - pipeline/01_download_smard.py
+      - dhf/smard.py
     outs:
-      - data/downloads/example_data.parquet:
+      - data/downloads/smard/pv.parquet:
+          persist: true
+      - data/downloads/smard/wind_onshore.parquet:
+          persist: true
+      - data/downloads/smard/wind_offshore.parquet:
+          persist: true
+      - data/downloads/smard/load.parquet:
           persist: true
 
-  process_example:
+  build_target_panel:
+    cmd: uv run python pipeline/02_build_target_panel.py
+    deps:
+      - pipeline/02_build_target_panel.py
+      - data/downloads/smard/pv.parquet
+      - data/downloads/smard/wind_onshore.parquet
+      - data/downloads/smard/wind_offshore.parquet
+      - data/downloads/smard/load.parquet
+    outs:
+      - data/processed/target_panel.parquet
+
+  eda:
     cmd: >-
       MPLBACKEND=Agg uv run jupytext --to notebook --execute
       --set-kernel python3
-      --output book/notebooks/02_analyse_example.ipynb
-      pipeline/02_analyse_example.py &&
+      --output book/notebooks/03_eda.ipynb
+      pipeline/03_eda.py &&
       uv run python pipeline/_strip_jupytext_metadata.py
-      book/notebooks/02_analyse_example.ipynb
+      book/notebooks/03_eda.ipynb
     deps:
-      - pipeline/02_analyse_example.py
-      - data/downloads/example_data.parquet
+      - pipeline/03_eda.py
+      - dhf/splits.py
+      - dhf/viz.py
+      - data/downloads/smard/pv.parquet
+      - data/downloads/smard/wind_onshore.parquet
+      - data/downloads/smard/wind_offshore.parquet
+      - data/downloads/smard/load.parquet
+      - data/processed/target_panel.parquet
     outs:
-      - book/notebooks/02_analyse_example.ipynb:
+      - book/notebooks/03_eda.ipynb:
           cache: false
-      - output/images/02_daily_average.png:
+      - output/images/03_data_availability.png:
           cache: false
-      - output/images/02_category_dist.png:
+      - output/images/03_headline_variables_timeseries.png:
+          cache: false
+
+  baseline_linear_regression:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/04_baseline_linear_regression.ipynb
+      pipeline/04_baseline_linear_regression.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/04_baseline_linear_regression.ipynb
+    deps:
+      - pipeline/04_baseline_linear_regression.py
+      - dhf/features.py
+      - dhf/splits.py
+      - dhf/viz.py
+      - dhf/reporting.py
+      - dhf/scenarios.py
+      - data/processed/target_panel.parquet
+    outs:
+      - book/notebooks/04_baseline_linear_regression.ipynb:
+          cache: false
+      - output/images/04_lr_mae_by_horizon.png:
+          cache: false
+      - output/images/04_lr_actual_vs_predicted_summer.png:
+          cache: false
+      - output/images/04_lr_actual_vs_predicted_winter.png:
+          cache: false
+      - output/images/04_lr_rolling_error.png:
+          cache: false
+      - output/images/04_lr_feature_importance.png:
+          cache: false
+      - data/processed/results/baseline_linear_regression.parquet
+
+  baseline_lightgbm:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/05_baseline_lightgbm.ipynb
+      pipeline/05_baseline_lightgbm.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/05_baseline_lightgbm.ipynb
+    deps:
+      - pipeline/05_baseline_lightgbm.py
+      - dhf/features.py
+      - dhf/splits.py
+      - dhf/viz.py
+      - dhf/reporting.py
+      - dhf/scenarios.py
+      - data/processed/target_panel.parquet
+    outs:
+      - book/notebooks/05_baseline_lightgbm.ipynb:
+          cache: false
+      - output/images/05_lgbm_mae_by_horizon.png:
+          cache: false
+      - output/images/05_lgbm_actual_vs_predicted_summer.png:
+          cache: false
+      - output/images/05_lgbm_actual_vs_predicted_winter.png:
+          cache: false
+      - output/images/05_lgbm_rolling_error.png:
+          cache: false
+      - output/images/05_lgbm_feature_importance.png:
+          cache: false
+      - data/processed/results/baseline_lightgbm.parquet
+
+  scenario_overview_tables:
+    cmd: uv run python pipeline/06_scenario_overview_tables.py
+    deps:
+      - pipeline/06_scenario_overview_tables.py
+      - dhf/scenarios.py
+      - dhf/viz.py
+      - data/processed/results/baseline_linear_regression.parquet
+      - data/processed/results/baseline_lightgbm.parquet
+    outs:
+      - book/notebooks/06_scenario_overview_tables.ipynb:
+          cache: false
+
+  scenario_overview_lead_times:
+    cmd: >-
+      MPLBACKEND=Agg uv run jupytext --to notebook --execute
+      --set-kernel python3
+      --output book/notebooks/07_scenario_overview_lead_times.ipynb
+      pipeline/07_scenario_overview_lead_times.py &&
+      uv run python pipeline/_strip_jupytext_metadata.py
+      book/notebooks/07_scenario_overview_lead_times.ipynb
+    deps:
+      - pipeline/07_scenario_overview_lead_times.py
+      - dhf/scenarios.py
+      - dhf/viz.py
+      - data/processed/results/baseline_linear_regression.parquet
+      - data/processed/results/baseline_lightgbm.parquet
+    outs:
+      - book/notebooks/07_scenario_overview_lead_times.ipynb:
+          cache: false
+      - output/images/07_lead_time_mae.png:
+          cache: false
+      - output/images/07_lead_time_rmse.png:
           cache: false

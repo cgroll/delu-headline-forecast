@@ -40,3 +40,349 @@ stages:
       hash: md5
       md5: 8e7046ced1ffd391bdfced90bf04fd34
       size: 179776
+  download_smard:
+    cmd: uv run python pipeline/01_download_smard.py
+    deps:
+    - path: dhf/smard.py
+      hash: md5
+      md5: 99730fc5824e80f59394a5a297ab28ea
+      size: 2512
+    - path: pipeline/01_download_smard.py
+      hash: md5
+      md5: d11f469f75d16d4b3c0be0ed7a5649bf
+      size: 2090
+    outs:
+    - path: data/downloads/smard/load.parquet
+      hash: md5
+      md5: df2a3a614f2d4376f722d942e2dc59d6
+      size: 986824
+    - path: data/downloads/smard/pv.parquet
+      hash: md5
+      md5: 36963a6d070dfdf075933091845d1add
+      size: 971218
+    - path: data/downloads/smard/wind_offshore.parquet
+      hash: md5
+      md5: 57d6613ff43d4e8cf7d996894f2aa406
+      size: 845988
+    - path: data/downloads/smard/wind_onshore.parquet
+      hash: md5
+      md5: 18e784c1ce4ec455fa575f43b0f43b2a
+      size: 1121166
+  build_target_panel:
+    cmd: uv run python pipeline/02_build_target_panel.py
+    deps:
+    - path: data/downloads/smard/load.parquet
+      hash: md5
+      md5: df2a3a614f2d4376f722d942e2dc59d6
+      size: 986824
+    - path: data/downloads/smard/pv.parquet
+      hash: md5
+      md5: 36963a6d070dfdf075933091845d1add
+      size: 971218
+    - path: data/downloads/smard/wind_offshore.parquet
+      hash: md5
+      md5: 57d6613ff43d4e8cf7d996894f2aa406
+      size: 845988
+    - path: data/downloads/smard/wind_onshore.parquet
+      hash: md5
+      md5: 18e784c1ce4ec455fa575f43b0f43b2a
+      size: 1121166
+    - path: pipeline/02_build_target_panel.py
+      hash: md5
+      md5: f695412dc77465f43f6b08d86bfd9f4c
+      size: 1421
+    outs:
+    - path: data/processed/target_panel.parquet
+      hash: md5
+      md5: c38b5ea68500b0ee2d0ecae200fbcc0f
+      size: 1966627
+  baseline_models:
+    cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
+      python3 --output book/notebooks/04_baseline_models.ipynb 
+      pipeline/04_baseline_models.py && uv run python 
+      pipeline/_strip_jupytext_metadata.py 
+      book/notebooks/04_baseline_models.ipynb
+    deps:
+    - path: data/processed/target_panel.parquet
+      hash: md5
+      md5: c38b5ea68500b0ee2d0ecae200fbcc0f
+      size: 1966627
+    - path: dhf/features.py
+      hash: md5
+      md5: 7b171af5abdd87260c26c9ab5a15934b
+      size: 4786
+    - path: dhf/splits.py
+      hash: md5
+      md5: 5d3269a9c7b6deadb825a0032cb7c251
+      size: 878
+    - path: dhf/viz.py
+      hash: md5
+      md5: 34e7b95b72406ffa32f92a20052965f9
+      size: 1512
+    - path: pipeline/04_baseline_models.py
+      hash: md5
+      md5: 413e00f8c73445604e3600a5f0087a62
+      size: 8021
+    outs:
+    - path: book/notebooks/04_baseline_models.ipynb
+      hash: md5
+      md5: b75812a05793ecdbeb8ed01f0c309996
+      size: 21594
+    - path: data/processed/baseline_results.parquet
+      hash: md5
+      md5: 63f42a071cd338e6bd48ae4b883f473e
+      size: 5364
+    - path: output/images/04_baseline_actual_vs_predicted.png
+      hash: md5
+      md5: e560146e89430b75494ef507904e876c
+      size: 1236930
+    - path: output/images/04_baseline_mae_by_horizon.png
+      hash: md5
+      md5: 781307e4939439fcbb4e0d3b500d569e
+      size: 99250
+  eda:
+    cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
+      python3 --output book/notebooks/03_eda.ipynb pipeline/03_eda.py && uv run 
+      python pipeline/_strip_jupytext_metadata.py book/notebooks/03_eda.ipynb
+    deps:
+    - path: data/downloads/smard/load.parquet
+      hash: md5
+      md5: df2a3a614f2d4376f722d942e2dc59d6
+      size: 986824
+    - path: data/downloads/smard/pv.parquet
+      hash: md5
+      md5: 36963a6d070dfdf075933091845d1add
+      size: 971218
+    - path: data/downloads/smard/wind_offshore.parquet
+      hash: md5
+      md5: 57d6613ff43d4e8cf7d996894f2aa406
+      size: 845988
+    - path: data/downloads/smard/wind_onshore.parquet
+      hash: md5
+      md5: 18e784c1ce4ec455fa575f43b0f43b2a
+      size: 1121166
+    - path: data/processed/target_panel.parquet
+      hash: md5
+      md5: c38b5ea68500b0ee2d0ecae200fbcc0f
+      size: 1966627
+    - path: dhf/splits.py
+      hash: md5
+      md5: 5a7705e7f4ffe98722305294c60fca9c
+      size: 1322
+    - path: dhf/viz.py
+      hash: md5
+      md5: 9f48b5a940ad2f6eb002ae97499f7c9b
+      size: 3784
+    - path: pipeline/03_eda.py
+      hash: md5
+      md5: 10426756771c4ae6c3304897530fadd7
+      size: 4020
+    outs:
+    - path: book/notebooks/03_eda.ipynb
+      hash: md5
+      md5: bc482b5d53d8ef1f21f123a419842477
+      size: 7060
+    - path: output/images/03_data_availability.png
+      hash: md5
+      md5: e1b98dbfed2bb41ffb5a27a0d9fec498
+      size: 44786
+    - path: output/images/03_headline_variables_timeseries.png
+      hash: md5
+      md5: 331d42b0902e2b392551173a7933b80e
+      size: 253195
+  baseline_linear_regression:
+    cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
+      python3 --output book/notebooks/04_baseline_linear_regression.ipynb 
+      pipeline/04_baseline_linear_regression.py && uv run python 
+      pipeline/_strip_jupytext_metadata.py 
+      book/notebooks/04_baseline_linear_regression.ipynb
+    deps:
+    - path: data/processed/target_panel.parquet
+      hash: md5
+      md5: c38b5ea68500b0ee2d0ecae200fbcc0f
+      size: 1966627
+    - path: dhf/features.py
+      hash: md5
+      md5: 7b171af5abdd87260c26c9ab5a15934b
+      size: 4786
+    - path: dhf/reporting.py
+      hash: md5
+      md5: 03156069d94eabf54691f8a57262f39d
+      size: 7855
+    - path: dhf/scenarios.py
+      hash: md5
+      md5: 45cff25508c05d86e6d584b41393fff3
+      size: 1986
+    - path: dhf/splits.py
+      hash: md5
+      md5: 5a7705e7f4ffe98722305294c60fca9c
+      size: 1322
+    - path: dhf/viz.py
+      hash: md5
+      md5: 9f48b5a940ad2f6eb002ae97499f7c9b
+      size: 3784
+    - path: pipeline/04_baseline_linear_regression.py
+      hash: md5
+      md5: 34a4e84fb2a4a645dad8d8edb69e2a77
+      size: 6340
+    outs:
+    - path: book/notebooks/04_baseline_linear_regression.ipynb
+      hash: md5
+      md5: d63033494df306e46f568ec91dfa46d4
+      size: 17965
+    - path: data/processed/results/baseline_linear_regression.parquet
+      hash: md5
+      md5: d18caf70c1ec51da2f547e99cab4542e
+      size: 7715
+    - path: output/images/04_lr_actual_vs_predicted_summer.png
+      hash: md5
+      md5: 9e55937e12bac9d1132e0df6c5ade1aa
+      size: 993008
+    - path: output/images/04_lr_actual_vs_predicted_winter.png
+      hash: md5
+      md5: 3ea7c93c4cc54f5064cd40ec57ad9d44
+      size: 911743
+    - path: output/images/04_lr_feature_importance.png
+      hash: md5
+      md5: 141f7e343b612b68b8a4799641e31de7
+      size: 129332
+    - path: output/images/04_lr_mae_by_horizon.png
+      hash: md5
+      md5: ce5d5de12aeebca97967072e01b35a8e
+      size: 105580
+    - path: output/images/04_lr_rolling_error.png
+      hash: md5
+      md5: 6315935eb074cee0f07092b1eea4f640
+      size: 532643
+  baseline_lightgbm:
+    cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
+      python3 --output book/notebooks/05_baseline_lightgbm.ipynb 
+      pipeline/05_baseline_lightgbm.py && uv run python 
+      pipeline/_strip_jupytext_metadata.py 
+      book/notebooks/05_baseline_lightgbm.ipynb
+    deps:
+    - path: data/processed/target_panel.parquet
+      hash: md5
+      md5: c38b5ea68500b0ee2d0ecae200fbcc0f
+      size: 1966627
+    - path: dhf/features.py
+      hash: md5
+      md5: 7b171af5abdd87260c26c9ab5a15934b
+      size: 4786
+    - path: dhf/reporting.py
+      hash: md5
+      md5: 03156069d94eabf54691f8a57262f39d
+      size: 7855
+    - path: dhf/scenarios.py
+      hash: md5
+      md5: 45cff25508c05d86e6d584b41393fff3
+      size: 1986
+    - path: dhf/splits.py
+      hash: md5
+      md5: 5a7705e7f4ffe98722305294c60fca9c
+      size: 1322
+    - path: dhf/viz.py
+      hash: md5
+      md5: 9f48b5a940ad2f6eb002ae97499f7c9b
+      size: 3784
+    - path: pipeline/05_baseline_lightgbm.py
+      hash: md5
+      md5: 69578d52639cfe46d779e0ecfd3e92d5
+      size: 6019
+    outs:
+    - path: book/notebooks/05_baseline_lightgbm.ipynb
+      hash: md5
+      md5: 372b0e8ecb21d377c80bbe5a7fcf108a
+      size: 17634
+    - path: data/processed/results/baseline_lightgbm.parquet
+      hash: md5
+      md5: aad406cce02121db0c25ec3ab9018ad2
+      size: 7404
+    - path: output/images/05_lgbm_actual_vs_predicted_summer.png
+      hash: md5
+      md5: faeddd39b49e72d04acad586557e491d
+      size: 973028
+    - path: output/images/05_lgbm_actual_vs_predicted_winter.png
+      hash: md5
+      md5: 93a70edf91032201c10f19292dfdf5c4
+      size: 894741
+    - path: output/images/05_lgbm_feature_importance.png
+      hash: md5
+      md5: a7817c3e66a67eb0f56ecbc3a905965f
+      size: 130001
+    - path: output/images/05_lgbm_mae_by_horizon.png
+      hash: md5
+      md5: 1472b1a2881821ade0a67562ae9c20de
+      size: 106904
+    - path: output/images/05_lgbm_rolling_error.png
+      hash: md5
+      md5: cb0457e5d855bfb85d757e813d788765
+      size: 540512
+  scenario_overview_tables:
+    cmd: uv run python pipeline/06_scenario_overview_tables.py
+    deps:
+    - path: data/processed/results/baseline_lightgbm.parquet
+      hash: md5
+      md5: aad406cce02121db0c25ec3ab9018ad2
+      size: 7404
+    - path: data/processed/results/baseline_linear_regression.parquet
+      hash: md5
+      md5: d18caf70c1ec51da2f547e99cab4542e
+      size: 7715
+    - path: dhf/scenarios.py
+      hash: md5
+      md5: 45cff25508c05d86e6d584b41393fff3
+      size: 1986
+    - path: dhf/viz.py
+      hash: md5
+      md5: 9f48b5a940ad2f6eb002ae97499f7c9b
+      size: 3784
+    - path: pipeline/06_scenario_overview_tables.py
+      hash: md5
+      md5: 72e4e91bb1c76e538e8da5be6e18fd60
+      size: 3509
+    outs:
+    - path: book/notebooks/06_scenario_overview_tables.ipynb
+      hash: md5
+      md5: bea1e3bc5b8157e53116d0950c1b16bd
+      size: 4553
+  scenario_overview_lead_times:
+    cmd: MPLBACKEND=Agg uv run jupytext --to notebook --execute --set-kernel 
+      python3 --output book/notebooks/07_scenario_overview_lead_times.ipynb 
+      pipeline/07_scenario_overview_lead_times.py && uv run python 
+      pipeline/_strip_jupytext_metadata.py 
+      book/notebooks/07_scenario_overview_lead_times.ipynb
+    deps:
+    - path: data/processed/results/baseline_lightgbm.parquet
+      hash: md5
+      md5: aad406cce02121db0c25ec3ab9018ad2
+      size: 7404
+    - path: data/processed/results/baseline_linear_regression.parquet
+      hash: md5
+      md5: d18caf70c1ec51da2f547e99cab4542e
+      size: 7715
+    - path: dhf/scenarios.py
+      hash: md5
+      md5: 45cff25508c05d86e6d584b41393fff3
+      size: 1986
+    - path: dhf/viz.py
+      hash: md5
+      md5: 9f48b5a940ad2f6eb002ae97499f7c9b
+      size: 3784
+    - path: pipeline/07_scenario_overview_lead_times.py
+      hash: md5
+      md5: 03aba512c70e80a04a48a3e4aa2c1571
+      size: 3249
+    outs:
+    - path: book/notebooks/07_scenario_overview_lead_times.ipynb
+      hash: md5
+      md5: f15d71901cfbd9dcd3ac7c66a52de85a
+      size: 6205
+    - path: output/images/07_lead_time_mae.png
+      hash: md5
+      md5: 5785858e83a819558047f4988ba1fb97
+      size: 125710
+    - path: output/images/07_lead_time_rmse.png
+      hash: md5
+      md5: 6498e76f77b915dfed61dca524566b07
+      size: 127529
