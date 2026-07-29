@@ -5,6 +5,36 @@
     <loc>http://localhost:3000</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/notebooks/analyse-example</loc>
+    <loc>http://localhost:3000/notebooks/eda</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/pecd-zones-eda</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/pecd-mastr-comparison-eda</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/baseline-linear-regression</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/baseline-lightgbm</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/perfect-foresight-weather-lightgbm</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/perfect-foresight-weather-lightgbm-quarterly-refit</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/perfect-foresight-weather-xgboost-quarterly-refit</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/perfect-foresight-weather-catboost-quarterly-refit</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/scenario-overview-tables</loc>
+  </url>
+  <url>
+    <loc>http://localhost:3000/notebooks/scenario-overview-lead-times</loc>
   </url>
 </urlset>
